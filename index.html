@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Total RP 3 Profile Editor & Icon Directory</title>
+  <title>Total RP 3 Profile Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Fira+Code&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
       outline: none;
     }
 
-    /* Main Grid */
+    /* Main Workspace */
     .trp-workspace {
       display: grid;
       grid-template-columns: 1fr 600px;
@@ -138,7 +138,7 @@
       max-height: 840px;
     }
 
-    /* Parchment Frame Container */
+    /* In-Game Frame */
     .trp-frame {
       width: 555px;
       min-height: 680px;
@@ -240,7 +240,7 @@
       border-radius: 8px;
       padding: 22px;
       width: 90%;
-      max-width: 580px;
+      max-width: 620px;
       box-shadow: 0 18px 40px rgba(0,0,0,0.8);
     }
     .trp-modal-content h3 {
@@ -281,11 +281,11 @@
       display: flex;
       justify-content: flex-end;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 18px;
     }
 
-    /* Icon Filter Tabs & Grid */
-    .trp-icon-tabs {
+    /* Tabs & Browsers */
+    .trp-tabs {
       display: flex;
       gap: 6px;
       overflow-x: auto;
@@ -309,11 +309,54 @@
       border-color: #b88628;
     }
 
+    /* Banner Gallery Cards */
+    .trp-banner-browser {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #101017;
+      border: 1px solid #262636;
+      border-radius: 5px;
+      margin-bottom: 12px;
+    }
+    .trp-banner-card {
+      background: #191924;
+      border: 1px solid #2e2e42;
+      border-radius: 4px;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .trp-banner-card:hover {
+      border-color: #d4af37;
+      transform: translateY(-2px);
+    }
+    .trp-banner-card img {
+      width: 100%;
+      height: 60px;
+      object-fit: cover;
+      background: #000;
+    }
+    .trp-banner-card span {
+      padding: 5px 8px;
+      font-size: 11px;
+      color: #e2e8f0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Icon Grid */
     .trp-icon-browser {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
       gap: 6px;
-      max-height: 280px;
+      max-height: 250px;
       overflow-y: auto;
       padding: 8px;
       background: #101017;
@@ -365,9 +408,9 @@
         <option value="horde">🩸 Crimson / Sin'dorei</option>
       </select>
 
-      <button type="button" class="trp-btn" onclick="openModal('imgModal')">🖼 Add Banner</button>
+      <button type="button" class="trp-btn" onclick="openModal('bannerModal')">🖼 Banner &amp; Texture Gallery</button>
       <button type="button" class="trp-btn" onclick="openModal('gradModal')">🌈 Gradient</button>
-      <button type="button" class="trp-btn" onclick="openModal('iconModal')">🛡 Full Icon Directory</button>
+      <button type="button" class="trp-btn" onclick="openModal('iconModal')">🛡 Icon Directory</button>
       <button type="button" class="trp-btn trp-btn-gold" onclick="copyTRPCode()">📋 Copy TRP Code</button>
     </div>
   </header>
@@ -400,36 +443,63 @@
     </section>
   </main>
 
-  <!-- Banner / Texture Modal -->
-  <div id="imgModal" class="trp-modal">
+  <!-- Banner & Texture Directory Modal -->
+  <div id="bannerModal" class="trp-modal">
     <div class="trp-modal-content">
-      <h3>Insert In-Game Image / Banner</h3>
-      <p class="trp-modal-sub">Use texture paths from wow.export or game files</p>
-      
-      <label>Texture Path:</label>
-      <input type="text" id="imgPath" value="GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN">
+      <h3>Banner &amp; Texture Gallery</h3>
+      <p class="trp-modal-sub">Pick a preset from the RP community catalog or paste a custom texture path.</p>
 
-      <div class="trp-grid-2">
-        <div>
-          <label>Width (px):</label>
-          <input type="number" id="imgW" value="555">
+      <!-- Category Filter Tabs -->
+      <div class="trp-tabs">
+        <button type="button" class="trp-tab-btn active" onclick="setBannerCategory('all', this)">All Banners</button>
+        <button type="button" class="trp-tab-btn" onclick="setBannerCategory('skies', this)">Skies &amp; Atmosphere</button>
+        <button type="button" class="trp-tab-btn" onclick="setBannerCategory('frames', this)">Parchments &amp; Headers</button>
+        <button type="button" class="trp-tab-btn" onclick="setBannerCategory('dividers', this)">Tendrils &amp; Borders</button>
+        <button type="button" class="trp-tab-btn" onclick="setBannerCategory('crests', this)">Crests &amp; Factions</button>
+      </div>
+
+      <!-- Live Cards Browser -->
+      <div id="bannerBrowserGrid" class="trp-banner-browser"></div>
+
+      <!-- Config & Sizing -->
+      <div style="background:#13131c;border:1px solid #272738;border-radius:6px;padding:12px;margin-top:8px;">
+        <label>Selected Texture Path:</label>
+        <input type="text" id="imgPath" value="GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN" oninput="previewSelectedBanner(this.value)">
+
+        <div class="trp-grid-2" style="margin-top:6px;">
+          <div>
+            <label>Width (px):</label>
+            <input type="number" id="imgW" value="555">
+          </div>
+          <div>
+            <label>Height (px):</label>
+            <input type="number" id="imgH" value="300">
+          </div>
         </div>
-        <div>
-          <label>Height (px):</label>
-          <input type="number" id="imgH" value="300">
+
+        <div class="trp-grid-2" style="margin-top:6px;">
+          <div>
+            <label>Quick Width Presets:</label>
+            <div style="display:flex;gap:4px;margin-top:4px;">
+              <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 300)">Full (555px)</button>
+              <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 120)">Header (120px)</button>
+              <button type="button" class="trp-tab-btn" onclick="setSizePreset(270, 180)">Half (270px)</button>
+            </div>
+          </div>
+          <div>
+            <label>Placement / Layering:</label>
+            <select id="imgPos">
+              <option value="">Inline Banner (Center text flow)</option>
+              <option value=":l">Background Layer Left (:l)</option>
+              <option value=":r">Background Layer Right (:r)</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <label>Placement / Layering:</label>
-      <select id="imgPos">
-        <option value="">Inline Banner (Pushes text down)</option>
-        <option value=":l">Background Layer Left (:l)</option>
-        <option value=":r">Background Layer Right (:r)</option>
-      </select>
-
       <div class="trp-modal-actions">
-        <button type="button" class="trp-btn" onclick="closeModal('imgModal')">Cancel</button>
-        <button type="button" class="trp-btn trp-btn-gold" onclick="insertImageTag()">Insert</button>
+        <button type="button" class="trp-btn" onclick="closeModal('bannerModal')">Cancel</button>
+        <button type="button" class="trp-btn trp-btn-gold" onclick="insertImageTag()">Insert Banner</button>
       </div>
     </div>
   </div>
@@ -460,32 +530,28 @@
     </div>
   </div>
 
-  <!-- Extended Searchable Icons & Symbols Modal -->
+  <!-- Icons & Symbols Modal -->
   <div id="iconModal" class="trp-modal">
     <div class="trp-modal-content">
       <h3>World of Warcraft Icon Directory</h3>
       <p class="trp-modal-sub">Search or browse thousands of game icons. Click any icon to insert.</p>
 
-      <!-- Instant Filter Bar -->
       <div style="display:flex;gap:8px;margin-bottom:8px;">
         <input type="text" id="iconSearchInput" placeholder="Filter by keyword (e.g. fire, sword, tome, crown, void, potion)..." oninput="filterIconCatalog(this.value)">
         <input type="number" id="iconInsertSize" value="18" style="width:70px;" title="Insert Size (px)">
       </div>
 
-      <!-- Category Filter Tabs -->
-      <div class="trp-icon-tabs">
-        <button type="button" class="trp-tab-btn active" onclick="setCategoryFilter('all', this)">All Icons</button>
-        <button type="button" class="trp-tab-btn" onclick="setCategoryFilter('arcane', this)">Arcane &amp; Spells</button>
-        <button type="button" class="trp-tab-btn" onclick="setCategoryFilter('weapons', this)">Weapons &amp; War</button>
-        <button type="button" class="trp-tab-btn" onclick="setCategoryFilter('armor', this)">Apparel &amp; Armor</button>
-        <button type="button" class="trp-tab-btn" onclick="setCategoryFilter('relics', this)">Relics &amp; Jewelry</button>
-        <button type="button" class="trp-tab-btn" onclick="setCategoryFilter('nature', this)">Elements &amp; Nature</button>
+      <div class="trp-tabs">
+        <button type="button" class="trp-tab-btn active" onclick="setIconCategoryFilter('all', this)">All Icons</button>
+        <button type="button" class="trp-tab-btn" onclick="setIconCategoryFilter('arcane', this)">Arcane &amp; Spells</button>
+        <button type="button" class="trp-tab-btn" onclick="setIconCategoryFilter('weapons', this)">Weapons &amp; War</button>
+        <button type="button" class="trp-tab-btn" onclick="setIconCategoryFilter('armor', this)">Apparel &amp; Armor</button>
+        <button type="button" class="trp-tab-btn" onclick="setIconCategoryFilter('relics', this)">Relics &amp; Jewelry</button>
+        <button type="button" class="trp-tab-btn" onclick="setIconCategoryFilter('nature', this)">Elements &amp; Nature</button>
       </div>
 
-      <!-- Dynamic Icon Grid -->
       <div id="iconGridContainer" class="trp-icon-browser"></div>
 
-      <!-- Safe Unicode Anchors -->
       <label style="margin-top:12px;">Safe RP Anchored Glyphs:</label>
       <div class="trp-symbol-row">
         <span onclick="insertSnippet(' 一 ◈ ')">◈</span>
@@ -507,9 +573,80 @@
   </div>
 
   <script>
-    // Master Directory of WoW Icon Identifiers & Categories
+    // Master Directory of Curated WoW Banners & Textures
+    const WOW_BANNER_CATALOG = [
+      // Atmosphere & Skies
+      { title: 'Suramar Night Clouds', path: 'GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN', w: 555, h: 300, cat: 'skies' },
+      { title: 'Argus Void Tendrils & Nebula', path: 'GLUES/Models/UI_VoidElf/7FX_Argus_Void_Nebula01', w: 555, h: 300, cat: 'skies' },
+      { title: 'Teldrassil Canopy', path: 'GLUES/Models/UI_NightElf/NightElf_Sky_Clouds01', w: 555, h: 300, cat: 'skies' },
+      { title: 'Eversong Spire Sunset', path: 'GLUES/Models/UI_BloodElf/BloodElf_Sky_Clouds01', w: 555, h: 300, cat: 'skies' },
+      
+      // Parchments & Frames
+      { title: 'Ornate Parchment Header', path: 'Interface/ACHIEVEMENTFRAME/UI-Achievement-Parchment-Horizontal', w: 555, h: 120, cat: 'frames' },
+      { title: 'Dialog Box Dark Tint', path: 'Interface/DialogFrame/UI-DialogBox-Background', w: 555, h: 300, cat: 'frames' },
+      { title: 'Garrison Stone Slate', path: 'Interface/Garrison/GarrisonUIBackground', w: 555, h: 350, cat: 'frames' },
+      { title: 'Quest Log Scroll Canvas', path: 'Interface/QuestFrame/UI-QuestLog-BookView', w: 555, h: 350, cat: 'frames' },
+
+      // Tendrils & Dividers
+      { title: 'Void Tendril Border (Left/Right)', path: 'Interface/glues/models/ui_voidelf/7fx_argus_void_tendrils01', w: 75, h: 555, cat: 'dividers' },
+      { title: 'Elven Filigree Line', path: 'Interface/AddOns/TotalRP3/resources/divider_elven', w: 555, h: 35, cat: 'dividers' },
+      { title: 'Runic Stone Border', path: 'Interface/Tooltips/UI-Tooltip-Border', w: 555, h: 40, cat: 'dividers' },
+
+      // Crests & Factions
+      { title: 'Silvermoon Sun Crest', path: 'Interface/GLUES/CharacterCreate/UI-CharacterCreate-Factions', w: 256, h: 256, cat: 'crests' },
+      { title: 'Alliance Lion Crest', path: 'Interface/GLUES/CharacterCreate/UI-CharacterCreate-Alliance', w: 256, h: 256, cat: 'crests' },
+      { title: 'Horde Iron Crest', path: 'Interface/GLUES/CharacterCreate/UI-CharacterCreate-Horde', w: 256, h: 256, cat: 'crests' },
+      { title: 'Kirin Tor Eye Sigil', path: 'Interface/PVPFrame/Icons/PVP-Banner-Emblem-71', w: 256, h: 256, cat: 'crests' }
+    ];
+
+    let currentBannerCategory = 'all';
+
+    function buildBannerGallery() {
+      const container = document.getElementById('bannerBrowserGrid');
+      container.innerHTML = '';
+
+      WOW_BANNER_CATALOG.forEach(banner => {
+        if (currentBannerCategory !== 'all' && banner.cat !== currentBannerCategory) return;
+
+        const card = document.createElement('div');
+        card.className = 'trp-banner-card';
+        card.onclick = () => selectBannerPreset(banner);
+
+        const img = document.createElement('img');
+        img.src = resolveWoWTextureUrl(banner.path);
+        img.alt = banner.title;
+        img.loading = 'lazy';
+        img.onerror = function() { this.src = 'https://wow.zamimg.com/images/wow/container/parchment-header.png'; };
+
+        const label = document.createElement('span');
+        label.textContent = banner.title;
+
+        card.appendChild(img);
+        card.appendChild(label);
+        container.appendChild(card);
+      });
+    }
+
+    function selectBannerPreset(banner) {
+      document.getElementById('imgPath').value = banner.path;
+      document.getElementById('imgW').value = banner.w;
+      document.getElementById('imgH').value = banner.h;
+    }
+
+    function setSizePreset(w, h) {
+      document.getElementById('imgW').value = w;
+      document.getElementById('imgH').value = h;
+    }
+
+    function setBannerCategory(category, buttonEl) {
+      currentBannerCategory = category;
+      document.querySelectorAll('#bannerModal .trp-tab-btn').forEach(b => b.classList.remove('active'));
+      buttonEl.classList.add('active');
+      buildBannerGallery();
+    }
+
+    // Icon Catalog
     const WOW_ICON_CATALOG = [
-      // Arcane & Spells
       { name: 'inv_misc_book_09', cat: 'arcane' },
       { name: 'inv_scroll_03', cat: 'arcane' },
       { name: 'spell_holy_magicalsentry', cat: 'arcane' },
@@ -522,8 +659,6 @@
       { name: 'inv_staff_30', cat: 'arcane' },
       { name: 'inv_wand_02', cat: 'arcane' },
       { name: 'inv_relics_hourglass', cat: 'arcane' },
-
-      // Weapons & War
       { name: 'inv_sword_04', cat: 'weapons' },
       { name: 'inv_sword_27', cat: 'weapons' },
       { name: 'inv_shield_06', cat: 'weapons' },
@@ -531,13 +666,10 @@
       { name: 'inv_weapon_bow_08', cat: 'weapons' },
       { name: 'inv_weapon_crossbow_01', cat: 'weapons' },
       { name: 'inv_weapon_shortblade_05', cat: 'weapons' },
-      { name: 'inv_knife_1h_pvp400_c_01', cat: 'weapons' },
       { name: 'inv_axe_02', cat: 'weapons' },
       { name: 'inv_mace_02', cat: 'weapons' },
       { name: 'inv_bannerpvp_02', cat: 'weapons' },
       { name: 'inv_misc_horn_01', cat: 'weapons' },
-
-      // Apparel & Armor
       { name: 'inv_helmet_03', cat: 'armor' },
       { name: 'inv_helmet_46', cat: 'armor' },
       { name: 'inv_crown_01', cat: 'armor' },
@@ -546,44 +678,33 @@
       { name: 'inv_chest_plate01', cat: 'armor' },
       { name: 'inv_boots_cloth_01', cat: 'armor' },
       { name: 'inv_gauntlets_04', cat: 'armor' },
-      { name: 'inv_shoulder_02', cat: 'armor' },
-
-      // Relics & Jewelry
       { name: 'inv_jewelry_ring_03', cat: 'relics' },
       { name: 'inv_jewelry_necklace_07', cat: 'relics' },
       { name: 'inv_jewelry_talisman_07', cat: 'relics' },
       { name: 'inv_misc_pocketwatch_01', cat: 'relics' },
       { name: 'inv_potion_51', cat: 'relics' },
-      { name: 'inv_potion_52', cat: 'relics' },
       { name: 'inv_misc_gem_sapphire_02', cat: 'relics' },
       { name: 'inv_misc_gem_ruby_01', cat: 'relics' },
-      { name: 'inv_misc_gem_emerald_02', cat: 'relics' },
-      { name: 'inv_misc_gem_diamond_02', cat: 'relics' },
       { name: 'inv_misc_key_03', cat: 'relics' },
       { name: 'inv_letter_15', cat: 'relics' },
       { name: 'inv_misc_coin_02', cat: 'relics' },
       { name: 'inv_drink_05', cat: 'relics' },
-
-      // Elements & Nature
       { name: 'spell_fire_flamebolt', cat: 'nature' },
       { name: 'spell_fire_masterofelements', cat: 'nature' },
       { name: 'spell_frost_frostbolt02', cat: 'nature' },
       { name: 'spell_nature_healingtouch', cat: 'nature' },
       { name: 'spell_nature_rejuvenation', cat: 'nature' },
       { name: 'spell_nature_lightning', cat: 'nature' },
-      { name: 'inv_misc_herb_01', cat: 'nature' },
-      { name: 'inv_misc_herb_nightmarevine', cat: 'nature' }
+      { name: 'inv_misc_herb_01', cat: 'nature' }
     ];
 
-    let currentCategory = 'all';
+    let currentIconCategory = 'all';
 
     function buildIconDirectory(filterKeyword = '') {
       const container = document.getElementById('iconGridContainer');
       container.innerHTML = '';
-
       const query = filterKeyword.trim().toLowerCase();
 
-      // If user typed a custom icon name not in the catalog, offer it as a live result at top
       if (query && !WOW_ICON_CATALOG.some(i => i.name.toLowerCase() === query)) {
         const customImg = document.createElement('img');
         customImg.src = `https://wow.zamimg.com/images/wow/icons/large/${query}.jpg`;
@@ -594,7 +715,7 @@
       }
 
       WOW_ICON_CATALOG.forEach(icon => {
-        if (currentCategory !== 'all' && icon.cat !== currentCategory) return;
+        if (currentIconCategory !== 'all' && icon.cat !== currentIconCategory) return;
         if (query && !icon.name.toLowerCase().includes(query)) return;
 
         const img = document.createElement('img');
@@ -607,13 +728,11 @@
       });
     }
 
-    function filterIconCatalog(val) {
-      buildIconDirectory(val);
-    }
+    function filterIconCatalog(val) { buildIconDirectory(val); }
 
-    function setCategoryFilter(category, buttonEl) {
-      currentCategory = category;
-      document.querySelectorAll('.trp-tab-btn').forEach(b => b.classList.remove('active'));
+    function setIconCategoryFilter(category, buttonEl) {
+      currentIconCategory = category;
+      document.querySelectorAll('#iconModal .trp-tab-btn').forEach(b => b.classList.remove('active'));
       buttonEl.classList.add('active');
       buildIconDirectory(document.getElementById('iconSearchInput').value);
     }
@@ -715,6 +834,7 @@
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
       if (id === 'iconModal') buildIconDirectory();
+      if (id === 'bannerModal') buildBannerGallery();
     }
     function closeModal(id) {
       document.getElementById(id).style.display = 'none';
@@ -736,7 +856,7 @@
       const h = document.getElementById('imgH').value.trim();
       const pos = document.getElementById('imgPos').value;
       insertSnippet(`\n{img:${path}:${w}:${h}${pos}}\n`);
-      closeModal('imgModal');
+      closeModal('bannerModal');
     }
 
     function hexToRgb(hex) {
@@ -768,6 +888,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       renderTRP();
       buildIconDirectory();
+      buildBannerGallery();
     });
   </script>
 </body>
