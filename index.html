@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRP3 About Section Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Fira+Code&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d11;
+      color: #e5e5e5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Main App Header & Toolbar */
+    .trp-app-header {
+      background: #18181f;
+      border-bottom: 1px solid #2a2a36;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .trp-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #d4af37;
+      letter-spacing: 0.5px;
+    }
+    .trp-toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .trp-btn {
+      background: #252530;
+      color: #e2e8f0;
+      border: 1px solid #3c3c4d;
+      padding: 7px 14px;
+      border-radius: 5px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .trp-btn:hover {
+      background: #323242;
+      border-color: #6366f1;
+    }
+    .trp-btn-gold {
+      background: #94691e;
+      color: #ffffff;
+      border-color: #b88628;
+      font-weight: 600;
+    }
+    .trp-btn-gold:hover {
+      background: #b07e24;
+    }
+    .trp-select {
+      background: #252530;
+      color: #e2e8f0;
+      border: 1px solid #3c3c4d;
+      padding: 7px 12px;
+      border-radius: 5px;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Split Screen Layout */
+    .trp-workspace {
+      display: grid;
+      grid-template-columns: 1fr 600px;
+      flex: 1;
+      gap: 20px;
+      padding: 20px 24px;
+      background: #0f0f14;
+    }
+    @media (max-width: 1100px) {
+      .trp-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .trp-panel {
+      display: flex;
+      flex-direction: column;
+    }
+    .trp-panel-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #8c8c9e;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+    }
+    #trpInput {
+      flex: 1;
+      min-height: 650px;
+      background: #15151c;
+      color: #f1f1f5;
+      border: 1px solid #272733;
+      border-radius: 6px;
+      padding: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+    #trpInput:focus {
+      border-color: #7c3aed;
+    }
+
+    /* Live Preview Viewport */
+    .trp-viewport-wrap {
+      background: #070709;
+      border: 1px solid #202028;
+      border-radius: 6px;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      overflow-y: auto;
+      max-height: 820px;
+    }
+
+    /* Authentic In-Game Frame */
+    .trp-frame {
+      width: 555px;
+      min-height: 680px;
+      background-color: #f4e8cf;
+      color: #2b1d0c;
+      font-family: 'Merriweather', Georgia, serif;
+      font-size: 13.5px;
+      line-height: 1.6;
+      padding: 26px 22px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.6), inset 0 0 45px rgba(139, 90, 43, 0.25);
+      border: 2px solid #5a4123;
+      border-radius: 3px;
+      overflow-wrap: break-word;
+      position: relative;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    /* Native Text Z-Indexing */
+    .trp-frame h1, 
+    .trp-frame h2, 
+    .trp-frame h3, 
+    .trp-frame p, 
+    .trp-frame span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .trp-frame .trp-h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+      color: #4a1c0d;
+      margin: 12px 0 8px 0;
+      border-bottom: 1px solid rgba(90, 65, 35, 0.25);
+      padding-bottom: 4px;
+    }
+    .trp-frame .trp-h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #5c2712;
+      margin: 12px 0 6px 0;
+    }
+    .trp-frame .trp-h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #3b2014;
+      margin: 8px 0 3px 0;
+    }
+    .trp-frame .trp-p {
+      margin-bottom: 10px;
+    }
+
+    /* Images */
+    .trp-texture.trp-img-block {
+      display: block;
+      margin: 8px auto;
+      position: relative;
+      z-index: 2;
+    }
+    .trp-texture.trp-img-dock-l {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .trp-texture.trp-img-dock-r {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .trp-inline-icon {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 3px;
+      border-radius: 3px;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    /* Modals */
+    .trp-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .trp-modal-content {
+      background: #181822;
+      border: 1px solid #343446;
+      border-radius: 8px;
+      padding: 22px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.8);
+    }
+    .trp-modal-content h3 {
+      font-size: 16px;
+      color: #f1f1f5;
+      margin-bottom: 4px;
+    }
+    .trp-modal-sub {
+      font-size: 12px;
+      color: #9292a4;
+      margin-bottom: 14px;
+    }
+    .trp-modal label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #c5c5d3;
+      margin: 10px 0 4px 0;
+    }
+    .trp-modal input, .trp-modal select {
+      width: 100%;
+      background: #0f0f14;
+      border: 1px solid #2d2d3c;
+      padding: 8px 10px;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 13px;
+      outline: none;
+    }
+    .trp-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .trp-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .trp-symbol-row span {
+      display: inline-block;
+      padding: 6px 11px;
+      background: #252534;
+      border-radius: 4px;
+      margin: 3px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.1s;
+    }
+    .trp-symbol-row span:hover {
+      background: #39394f;
+    }
+    .trp-icon-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .trp-icon-grid img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid #373748;
+      transition: transform 0.1s, border-color 0.1s;
+    }
+    .trp-icon-grid img:hover {
+      transform: scale(1.15);
+      border-color: #d4af37;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation & Actions -->
+  <header class="trp-app-header">
+    <div class="trp-brand">
+      ⚔ Total RP 3 Profile Editor
+    </div>
+    <div class="trp-toolbar">
+      <!-- Background Template Switcher -->
+      <select id="bgThemePicker" class="trp-select" onchange="applyTRPBackground(this.value)">
+        <option value="parchment">📜 Theme: Classic Parchment</option>
+        <option value="dark">📜 Theme: Dark Parchment</option>
+        <option value="void">🌌 Theme: Void / Midnight</option>
+        <option value="stone">🛡 Theme: Iron / Slate Stone</option>
+        <option value="horde">🩸 Theme: Crimson / Sin'dorei</option>
+      </select>
+
+      <button type="button" class="trp-btn" onclick="openModal('imgModal')">🖼 Add Banner</button>
+      <button type="button" class="trp-btn" onclick="openModal('gradModal')">🌈 Gradient</button>
+      <button type="button" class="trp-btn" onclick="openModal('iconModal')">🛡 Icons &amp; Symbols</button>
+      <button type="button" class="trp-btn trp-btn-gold" onclick="copyTRPCode()">📋 Copy TRP Code</button>
+    </div>
+  </header>
+
+  <!-- Editor & Live Preview -->
+  <main class="trp-workspace">
+    <section class="trp-panel">
+      <div class="trp-panel-header">
+        <span>TRP Markup</span>
+        <span>Paste or type below</span>
+      </div>
+      <textarea id="trpInput" spellcheck="false" oninput="renderTRP()">{img:GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN:555:300:l}
+{h1}{col:f4d03f}Lady Seleray Dawnheart{/col}{/h1}
+
+{h2}{col:ffffff}At First Glance{/col}{/h2}
+{p}{icon:inv_misc_book_09:18} {col:e8e8e8}A Quel'dorei arcanist garbed in star-spun silk robes. Delicate arcane chronometers tic silently upon her mantle.{/col}{/p}
+
+{h3}{col:ffffff}Chronicles &amp; Notes{/col}{/h3}
+{p}{icon:spell_holy_magicalsentry:18} {col:e8e8e8}Scholar of the arcane arts and mistress of localized temporal dilation. Seek her counsel with due decorum.{/col}{/p}</textarea>
+    </section>
+
+    <section class="trp-panel">
+      <div class="trp-panel-header">
+        <span>In-Game Canvas Preview</span>
+        <span>555px Frame</span>
+      </div>
+      <div class="trp-viewport-wrap">
+        <div id="trpOutput" class="trp-frame"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Banner / Texture Modal -->
+  <div id="imgModal" class="trp-modal">
+    <div class="trp-modal-content">
+      <h3>Insert In-Game Image / Banner</h3>
+      <p class="trp-modal-sub">Use texture paths from wow.export or game files</p>
+      
+      <label>Texture Path:</label>
+      <input type="text" id="imgPath" value="GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN">
+
+      <div class="trp-grid-2">
+        <div>
+          <label>Width (px):</label>
+          <input type="number" id="imgW" value="555">
+        </div>
+        <div>
+          <label>Height (px):</label>
+          <input type="number" id="imgH" value="300">
+        </div>
+      </div>
+
+      <label>Placement / Layering:</label>
+      <select id="imgPos">
+        <option value="">Inline Banner (Center)</option>
+        <option value=":l">Background Layer Left (:l)</option>
+        <option value=":r">Background Layer Right (:r)</option>
+      </select>
+
+      <div class="trp-modal-actions">
+        <button type="button" class="trp-btn" onclick="closeModal('imgModal')">Cancel</button>
+        <button type="button" class="trp-btn trp-btn-gold" onclick="insertImageTag()">Insert</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gradient Modal -->
+  <div id="gradModal" class="trp-modal">
+    <div class="trp-modal-content">
+      <h3>Character Gradient Generator</h3>
+      <p class="trp-modal-sub">Generates character-by-character color tags</p>
+      <label>Text to Colorize:</label>
+      <input type="text" id="gradText" value="Chronicles of the Highborne">
+
+      <div class="trp-grid-2">
+        <div>
+          <label>Start Color:</label>
+          <input type="color" id="gradStart" value="#e67e22" style="height:40px;cursor:pointer;">
+        </div>
+        <div>
+          <label>End Color:</label>
+          <input type="color" id="gradEnd" value="#9b59b6" style="height:40px;cursor:pointer;">
+        </div>
+      </div>
+
+      <div class="trp-modal-actions">
+        <button type="button" class="trp-btn" onclick="closeModal('gradModal')">Cancel</button>
+        <button type="button" class="trp-btn trp-btn-gold" onclick="insertGradientTag()">Insert Gradient</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Icons & Symbols Modal -->
+  <div id="iconModal" class="trp-modal">
+    <div class="trp-modal-content" style="max-width:540px;max-height:85vh;overflow-y:auto;">
+      <h3>Icons &amp; Symbols Palette</h3>
+      
+      <!-- Live Wowhead Icon Search -->
+      <label>Custom Wowhead Icon Name:</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="text" id="customIcon" placeholder="e.g. inv_misc_gem_sapphire_02" oninput="previewCustomIcon(this.value)">
+        <input type="number" id="customIconSize" value="18" style="width:70px;" title="Size in px">
+        <img id="customIconPreview" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg" style="width:34px;height:34px;border-radius:4px;border:1px solid #444;" alt="Preview">
+        <button type="button" class="trp-btn trp-btn-gold" onclick="insertCustomIcon()">Insert</button>
+      </div>
+
+      <label style="margin-top:14px;">Safe RP Heraldry &amp; Anchored Symbols:</label>
+      <div class="trp-symbol-row">
+        <span onclick="insertSnippet(' 一 ◈ ')">◈</span>
+        <span onclick="insertSnippet(' 一 ❖ ')">❖</span>
+        <span onclick="insertSnippet(' 一 ✦ ')">✦</span>
+        <span onclick="insertSnippet(' 一 ✧ ')">✧</span>
+        <span onclick="insertSnippet(' 一 ⚔ ')">⚔</span>
+        <span onclick="insertSnippet(' 一 ⚖ ')">⚖</span>
+        <span onclick="insertSnippet(' 一 ⚜ ')">⚜</span>
+        <span onclick="insertSnippet(' ═ ')">═</span>
+        <span onclick="insertSnippet(' ─ ')">─</span>
+        <span onclick="insertSnippet(' ✦ ━━━━━━━━━━━━ ✦ ')">Divider</span>
+      </div>
+
+      <label style="margin-top:14px;">Magic &amp; Mysticism:</label>
+      <div class="trp-icon-grid">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_book_09.jpg" onclick="insertSnippet('{icon:inv_misc_book_09:18}')" title="Tome" alt="Tome">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_scroll_03.jpg" onclick="insertSnippet('{icon:inv_scroll_03:18}')" title="Scroll" alt="Scroll">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_magicalsentry.jpg" onclick="insertSnippet('{icon:spell_holy_magicalsentry:18}')" title="Arcane Sigil" alt="Arcane Sigil">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_arcane_portalshattrath.jpg" onclick="insertSnippet('{icon:spell_arcane_portalshattrath:18}')" title="Portal" alt="Portal">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_staff_30.jpg" onclick="insertSnippet('{icon:inv_staff_30:18}')" title="Staff" alt="Staff">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_blessingofagility.jpg" onclick="insertSnippet('{icon:spell_holy_blessingofagility:18}')" title="Holy Light" alt="Holy Light">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowwordpain.jpg" onclick="insertSnippet('{icon:spell_shadow_shadowwordpain:18}')" title="Shadow" alt="Shadow">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/spell_fire_flamebolt.jpg" onclick="insertSnippet('{icon:spell_fire_flamebolt:18}')" title="Fire" alt="Fire">
+      </div>
+
+      <label style="margin-top:14px;">Martial &amp; Armory:</label>
+      <div class="trp-icon-grid">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_sword_04.jpg" onclick="insertSnippet('{icon:inv_sword_04:18}')" title="Sword" alt="Sword">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_shield_06.jpg" onclick="insertSnippet('{icon:inv_shield_06:18}')" title="Shield" alt="Shield">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_weapon_bow_08.jpg" onclick="insertSnippet('{icon:inv_weapon_bow_08:18}')" title="Bow" alt="Bow">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_weapon_shortblade_05.jpg" onclick="insertSnippet('{icon:inv_weapon_shortblade_05:18}')" title="Dagger" alt="Dagger">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_helmet_03.jpg" onclick="insertSnippet('{icon:inv_helmet_03:18}')" title="Helm" alt="Helm">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_bannerpvp_02.jpg" onclick="insertSnippet('{icon:inv_bannerpvp_02:18}')" title="Banner" alt="Banner">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_horn_01.jpg" onclick="insertSnippet('{icon:inv_misc_horn_01:18}')" title="Horn" alt="Horn">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_jewelry_trinketpvp_01.jpg" onclick="insertSnippet('{icon:inv_jewelry_trinketpvp_01:18}')" title="Medallion" alt="Medallion">
+      </div>
+
+      <label style="margin-top:14px;">Artifacts &amp; Curios:</label>
+      <div class="trp-icon-grid">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_pocketwatch_01.jpg" onclick="insertSnippet('{icon:inv_misc_pocketwatch_01:18}')" title="Pocket Watch" alt="Pocket Watch">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_drink_05.jpg" onclick="insertSnippet('{icon:inv_drink_05:18}')" title="Goblet" alt="Goblet">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_potion_51.jpg" onclick="insertSnippet('{icon:inv_potion_51:18}')" title="Potion" alt="Potion">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_jewelry_ring_03.jpg" onclick="insertSnippet('{icon:inv_jewelry_ring_03:18}')" title="Ring" alt="Ring">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_gem_sapphire_02.jpg" onclick="insertSnippet('{icon:inv_misc_gem_sapphire_02:18}')" title="Gem" alt="Gem">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_key_03.jpg" onclick="insertSnippet('{icon:inv_misc_key_03:18}')" title="Key" alt="Key">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_letter_15.jpg" onclick="insertSnippet('{icon:inv_letter_15:18}')" title="Sealed Letter" alt="Letter">
+        <img src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_coin_02.jpg" onclick="insertSnippet('{icon:inv_misc_coin_02:18}')" title="Gold Coin" alt="Coin">
+      </div>
+
+      <div class="trp-modal-actions">
+        <button type="button" class="trp-btn" onclick="closeModal('iconModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function resolveWoWTextureUrl(rawPath) {
+      const clean = rawPath.trim().replace(/\.(blp|png)$/i, '').replace(/^interface[\\\/]/i, '').replace(/\\/g, '/');
+      return 'https://raw.githubusercontent.com/keyboardturner/wow-ui-art/retail_png/' + clean + '.png';
+    }
+
+    function parseTRPToHTML(input) {
+      if (!input) return '';
+      let html = input
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      // Headers & Paragraphs
+      html = html.replace(/\{h1\}([\s\S]*?)\{\/h1\}/gi, '<h1 class="trp-h1">$1</h1>');
+      html = html.replace(/\{h2\}([\s\S]*?)\{\/h2\}/gi, '<h2 class="trp-h2">$1</h2>');
+      html = html.replace(/\{h3\}([\s\S]*?)\{\/h3\}/gi, '<h3 class="trp-h3">$1</h3>');
+      html = html.replace(/\{p\}([\s\S]*?)\{\/p\}/gi, '<p class="trp-p">$1</p>');
+
+      // Colors
+      html = html.replace(/\{col:([0-9a-fA-F]{6})\}([\s\S]*?)\{\/col\}/gi, '<span style="color: #$1;">$2</span>');
+
+      // Images / Banners
+      html = html.replace(/\{img:([^:]+):(\d+):(\d+)(?::([lrLR]))?\}/gi, function(_, path, w, h, dock) {
+        const src = resolveWoWTextureUrl(path);
+        let dockClass = 'trp-img-block';
+        if (dock) {
+          dockClass = dock.toLowerCase() === 'l' ? 'trp-img-dock-l' : 'trp-img-dock-r';
+        }
+        return '<img src="' + src + '" alt="Texture" class="trp-texture ' + dockClass + '" style="width:' + w + 'px; height:' + h + 'px; max-width:100%; object-fit: cover;" />';
+      });
+
+      // Icons
+      html = html.replace(/\{icon:([^:]+)(?::(\d+))?\}/gi, function(_, iconName, size) {
+        const iconSize = size ? size : 18;
+        const clean = iconName.trim().toLowerCase().replace(/\.(blp|png)$/i, '');
+        const src = 'https://wow.zamimg.com/images/wow/icons/large/' + clean + '.jpg';
+        return '<img src="' + src + '" alt="' + iconName + '" class="trp-inline-icon" style="width:' + iconSize + 'px; height:' + iconSize + 'px;" onerror="this.onerror=null;this.src=\'https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg\';" />';
+      });
+
+      // Line breaks
+      html = html.replace(/\n/g, '<br />');
+      return html;
+    }
+
+    function renderTRP() {
+      const raw = document.getElementById('trpInput').value;
+      const out = document.getElementById('trpOutput');
+      if (out) {
+        out.innerHTML = parseTRPToHTML(raw);
+      }
+    }
+
+    function applyTRPBackground(themeKey) {
+      const frame = document.getElementById('trpOutput');
+      if (!frame) return;
+
+      if (themeKey === 'dark') {
+        frame.style.backgroundColor = '#201812';
+        frame.style.color = '#dfd3c3';
+        frame.style.borderColor = '#4a3b2c';
+        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(0,0,0,0.7)';
+      } else if (themeKey === 'void') {
+        frame.style.backgroundColor = '#0b0814';
+        frame.style.color = '#d4c7ea';
+        frame.style.borderColor = '#362159';
+        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(93, 40, 150, 0.35)';
+      } else if (themeKey === 'stone') {
+        frame.style.backgroundColor = '#181b1e';
+        frame.style.color = '#cfd8dc';
+        frame.style.borderColor = '#37474f';
+        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.8)';
+      } else if (themeKey === 'horde') {
+        frame.style.backgroundColor = '#1c0a0a';
+        frame.style.color = '#edd6d6';
+        frame.style.borderColor = '#521414';
+        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(160, 20, 20, 0.4)';
+      } else {
+        // Classic Parchment
+        frame.style.backgroundColor = '#f4e8cf';
+        frame.style.color = '#2b1d0c';
+        frame.style.borderColor = '#5a4123';
+        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.6), inset 0 0 45px rgba(139, 90, 43, 0.25)';
+      }
+    }
+
+    function copyTRPCode() {
+      const text = document.getElementById('trpInput').value;
+      navigator.clipboard.writeText(text).then(function() {
+        alert('TRP Markup copied to clipboard! Ready to paste into World of Warcraft.');
+      });
+    }
+
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function insertSnippet(snippet) {
+      const txtArea = document.getElementById('trpInput');
+      const start = txtArea.selectionStart;
+      const end = txtArea.selectionEnd;
+      txtArea.value = txtArea.value.substring(0, start) + snippet + txtArea.value.substring(end);
+      txtArea.focus();
+      txtArea.selectionEnd = start + snippet.length;
+      renderTRP();
+      closeModal('iconModal');
+    }
+
+    function previewCustomIcon(val) {
+      const clean = val.trim().toLowerCase().replace(/\.(blp|png)$/i, '');
+      const prev = document.getElementById('customIconPreview');
+      if (clean) {
+        prev.src = 'https://wow.zamimg.com/images/wow/icons/large/' + clean + '.jpg';
+      } else {
+        prev.src = 'https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';
+      }
+    }
+
+    function insertCustomIcon() {
+      const val = document.getElementById('customIcon').value.trim().toLowerCase().replace(/\.(blp|png)$/i, '');
+      const sz = document.getElementById('customIconSize').value || 18;
+      if (!val) return;
+      insertSnippet('{icon:' + val + ':' + sz + '}');
+    }
+
+    function insertImageTag() {
+      const path = document.getElementById('imgPath').value.trim();
+      const w = document.getElementById('imgW').value.trim();
+      const h = document.getElementById('imgH').value.trim();
+      const pos = document.getElementById('imgPos').value;
+      insertSnippet('\n{img:' + path + ':' + w + ':' + h + pos + '}\n');
+      closeModal('imgModal');
+    }
+
+    function hexToRgb(hex) {
+      const bigint = parseInt(hex.replace('#', ''), 16);
+      return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+    }
+    function rgbToHex(r, g, b) {
+      return [r, g, b].map(function(x) {
+        return Math.round(x).toString(16).padStart(2, '0');
+      }).join('');
+    }
+
+    function insertGradientTag() {
+      const text = document.getElementById('gradText').value;
+      const c1 = hexToRgb(document.getElementById('gradStart').value);
+      const c2 = hexToRgb(document.getElementById('gradEnd').value);
+      
+      if (!text) return;
+      let out = '';
+      const steps = text.length;
+
+      for (let i = 0; i < steps; i++) {
+        const factor = steps > 1 ? i / (steps - 1) : 0;
+        const r = c1[0] + factor * (c2[0] - c1[0]);
+        const g = c1[1] + factor * (c2[1] - c1[1]);
+        const b = c1[2] + factor * (c2[2] - c1[2]);
+        out += '{col:' + rgbToHex(r, g, b) + '}' + text[i] + '{/col}';
+      }
+
+      insertSnippet(out);
+      closeModal('gradModal');
+    }
+
+    window.addEventListener('DOMContentLoaded', renderTRP);
+    renderTRP();
+  </script>
+</body>
+</html>
