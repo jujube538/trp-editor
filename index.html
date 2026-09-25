@@ -382,13 +382,13 @@
         <span>Paste or edit</span>
       </div>
       <textarea id="trpInput" spellcheck="false" oninput="renderTRP()">{img:GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN:555:300:l}
-{h1}{col:f4d03f}Lady jujube{/col}{/h1}
+{h1}{col:f4d03f}Lady Seleray Dawnheart{/col}{/h1}
 
 {h2}{col:ffffff}At First Glance{/col}{/h2}
-{p}{icon:inv_misc_book_09:18} {col:e8e8e8}A human just trying to do fun things{/col}{/p}
+{p}{icon:inv_misc_book_09:18} {col:e8e8e8}A Quel'dorei arcanist garbed in star-spun silk robes. Delicate arcane chronometers tic silently upon her mantle.{/col}{/p}
 
 {h3}{col:ffffff}Chronicles &amp; Notes{/col}{/h3}
-{p}{icon:spell_holy_magicalsentry:18} {col:e8e8e8}tired of not seeing in real time the updates to my trp.{/col}{/p}</textarea>
+{p}{icon:spell_holy_magicalsentry:18} {col:e8e8e8}Scholar of the arcane arts and mistress of localized temporal dilation. Seek her counsel with due decorum.{/col}{/p}</textarea>
     </section>
 
     <section class="trp-col">
@@ -404,12 +404,12 @@
 
   <!-- Clean Direct Banner Modal -->
   <div id="bannerModal" class="trp-modal">
-    <div class="trp-modal-content" style="max-width:520px;">
+    <div class="trp-modal-content" style="max-width:540px;">
       <h3>Insert In-Game Banner or Texture</h3>
-      <p class="trp-modal-sub">Enter the game texture path and configure sizing and placement.</p>
+      <p class="trp-modal-sub">Accepts any casing or format (e.g. glues/models/ui_nightborneelf/6sm_lightray.blp).</p>
 
       <label>Texture Path:</label>
-      <input type="text" id="imgPath" value="GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN" oninput="updateBannerPreview(this.value)">
+      <input type="text" id="imgPath" value="glues/models/ui_nightborneelf/6sm_lightray.blp" oninput="updateBannerPreview(this.value)">
 
       <div class="trp-grid-2" style="margin-top:6px;">
         <div>
@@ -424,7 +424,7 @@
 
       <div class="trp-grid-2" style="margin-top:6px;">
         <div>
-          <label>Quick Dimension Presets:</label>
+          <label>Quick Presets:</label>
           <div style="display:flex;gap:4px;margin-top:4px;">
             <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 300, ':l')">Backdrop (:l)</button>
             <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 120, '')">Header (120px)</button>
@@ -441,10 +441,10 @@
         </div>
       </div>
 
-      <!-- Single Live Preview for Confirmation -->
-      <div style="margin-top:14px;background:#101017;border:1px solid #272738;border-radius:6px;padding:8px;text-align:center;">
-        <span style="display:block;font-size:11px;color:#888;margin-bottom:6px;">Texture Preview</span>
-        <img id="bannerModalPreview" src="https://raw.githubusercontent.com/keyboardturner/wow-ui-art/retail_png/GLUES/Models/UI_NightborneElf/Suramar_Sky_Clouds01_nightSCREEN.png" style="max-width:100%;max-height:120px;object-fit:contain;border-radius:4px;" alt="Banner Preview" onerror="this.src='https://wow.zamimg.com/images/wow/container/parchment-header.png';">
+      <!-- Live Dynamic Texture Preview -->
+      <div style="margin-top:14px;background:#101017;border:1px solid #272738;border-radius:6px;padding:10px;text-align:center;">
+        <span style="display:block;font-size:11px;color:#888;margin-bottom:6px;">Live Texture Preview</span>
+        <img id="bannerModalPreview" src="" style="max-width:100%;max-height:140px;object-fit:contain;border-radius:4px;" alt="Banner Preview">
       </div>
 
       <div class="trp-modal-actions">
@@ -528,11 +528,56 @@
   </div>
 
   <script>
-    // Asset Resolvers
+    // Universal WoW Asset Resolver (Handles Case-Sensitivity & BLP conversion)
     function resolveWoWTextureUrl(rawPath) {
-      let clean = rawPath.trim().replace(/\.(blp|png)$/i, '');
-      clean = clean.replace(/^interface[\\\/]/i, '');
-      clean = clean.replace(/\\/g, '/');
+      if (!rawPath) return '';
+      
+      let clean = rawPath.trim()
+        .replace(/\\/g, '/')
+        .replace(/^interface\//i, '')
+        .replace(/\.(blp|png)$/i, '');
+
+      // Normalized directory casing for common WoW texture trees
+      const casingMap = [
+        [/^glues\/models\/ui_nightborneelf\//i, 'GLUES/Models/UI_NightborneElf/'],
+        [/^glues\/models\/ui_voidelf\//i, 'GLUES/Models/UI_VoidElf/'],
+        [/^glues\/models\/ui_bloodelf\//i, 'GLUES/Models/UI_BloodElf/'],
+        [/^glues\/models\/ui_nightelf\//i, 'GLUES/Models/UI_NightElf/'],
+        [/^glues\/models\/ui_dwarf\//i, 'GLUES/Models/UI_Dwarf/'],
+        [/^glues\/models\/ui_human\//i, 'GLUES/Models/UI_Human/'],
+        [/^glues\/models\/ui_orc\//i, 'GLUES/Models/UI_Orc/'],
+        [/^glues\/models\/ui_undead\//i, 'GLUES/Models/UI_Undead/'],
+        [/^glues\/models\/ui_tauren\//i, 'GLUES/Models/UI_Tauren/'],
+        [/^glues\/models\/ui_worgen\//i, 'GLUES/Models/UI_Worgen/'],
+        [/^glues\/models\/ui_zandalaritroll\//i, 'GLUES/Models/UI_ZandalariTroll/'],
+        [/^glues\/models\/ui_kultiranhuman\//i, 'GLUES/Models/UI_KulTiranHuman/'],
+        [/^glues\/models\/ui_kyrian\//i, 'GLUES/Models/UI_Kyrian/'],
+        [/^glues\/models\/ui_venthyr\//i, 'GLUES/Models/UI_Venthyr/'],
+        [/^glues\/models\/ui_nightfae\//i, 'GLUES/Models/UI_NightFae/'],
+        [/^glues\/models\/ui_necrolord\//i, 'GLUES/Models/UI_Necrolord/'],
+        [/^glues\/models\/ui_demonhunter\//i, 'GLUES/Models/UI_DemonHunter/'],
+        [/^glues\/charactercreate\//i, 'GLUES/CharacterCreate/'],
+        [/^glues\/models\//i, 'GLUES/Models/'],
+        [/^glues\//i, 'GLUES/'],
+        [/^achievementframe\//i, 'ACHIEVEMENTFRAME/'],
+        [/^dialogframe\//i, 'DialogFrame/'],
+        [/^garrison\//i, 'Garrison/'],
+        [/^questframe\//i, 'QuestFrame/'],
+        [/^guildframe\//i, 'GuildFrame/'],
+        [/^tooltips\//i, 'Tooltips/'],
+        [/^pvpframe\/icons\//i, 'PVPFrame/Icons/']
+      ];
+
+      for (let [regex, replacement] of casingMap) {
+        if (regex.test(clean)) {
+          clean = clean.replace(regex, replacement);
+          break;
+        }
+      }
+
+      // Handle specific known asset case quirks (e.g., 6SM_LightRay)
+      clean = clean.replace(/6sm_lightray/i, '6SM_LightRay');
+      clean = clean.replace(/suramar_sky_clouds01_nightscreen/i, 'Suramar_Sky_Clouds01_nightSCREEN');
 
       if (clean.toLowerCase().includes('ui-achievement-parchment-horizontal')) {
         return 'https://wow.zamimg.com/images/wow/container/parchment-header.png';
@@ -540,10 +585,28 @@
       return 'https://raw.githubusercontent.com/keyboardturner/wow-ui-art/retail_png/' + clean + '.png';
     }
 
+    function getFallbackTextureUrl(rawPath) {
+      const clean = rawPath.trim()
+        .replace(/\\/g, '/')
+        .replace(/^interface\//i, '')
+        .replace(/\.(blp|png)$/i, '');
+      return `https://wago.tools/textures/${clean}.png`;
+    }
+
     function updateBannerPreview(val) {
       const prev = document.getElementById('bannerModalPreview');
       if (val.trim()) {
-        prev.src = resolveWoWTextureUrl(val);
+        const primary = resolveWoWTextureUrl(val);
+        const fallback = getFallbackTextureUrl(val);
+        prev.onerror = function() {
+          if (this.src !== fallback) {
+            this.src = fallback;
+          } else {
+            this.onerror = null;
+            this.src = 'https://wow.zamimg.com/images/wow/container/parchment-header.png';
+          }
+        };
+        prev.src = primary;
       }
     }
 
@@ -675,18 +738,19 @@
 
       html = html.replace(/\{img:([^:]+):(\d+):(\d+)(?::([lrLR]))?\}/gi, function(_, path, w, h, dock) {
         const src = resolveWoWTextureUrl(path);
+        const fallbackSrc = getFallbackTextureUrl(path);
         let dockClass = 'trp-img-block';
         if (dock) {
           dockClass = dock.toLowerCase() === 'l' ? 'trp-img-dock-l' : 'trp-img-dock-r';
         }
-        return `<img src="${src}" alt="Texture" class="trp-texture ${dockClass}" style="width:${w}px; height:${h}px; max-width:100%; object-fit:cover;" onerror="this.onerror=null; this.src='https://wow.zamimg.com/images/wow/container/parchment-header.png';" />`;
+        return `<img src="${src}" alt="Texture" class="trp-texture ${dockClass}" style="width:${w}px; height:${h}px; max-width:100%; object-fit:cover;" onerror="if(this.src!='${fallbackSrc}'){this.src='${fallbackSrc}';}else{this.onerror=null;this.src='https://wow.zamimg.com/images/wow/container/parchment-header.png';}" />`;
       });
 
       html = html.replace(/\{icon:([^:]+)(?::(\d+))?\}/gi, function(_, iconName, size) {
         const iconSize = size ? size : 18;
         const clean = iconName.trim().toLowerCase().replace(/\.(blp|png)$/i, '');
         const src = `https://wow.zamimg.com/images/wow/icons/large/${clean}.jpg`;
-        return `<img src="${src}" alt="${iconName}" class="trp-inline-icon" style="width:${iconSize}px; height:${iconSize}px;" onerror="this.onerror=null; this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';" />`;
+        return `<img src="${src}" alt="${iconName}" class="trp-inline-icon" style="width:${iconSize}px; height:${iconSize}px;" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';" />`;
       });
 
       return html.replace(/\n/g, '<br />');
@@ -739,6 +803,9 @@
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
+      if (id === 'bannerModal') {
+        updateBannerPreview(document.getElementById('imgPath').value);
+      }
       if (id === 'iconModal' && MASTER_ICON_LIST.length <= STARTER_ICONS.length) {
         fetchFullIconManifest();
       }
