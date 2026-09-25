@@ -139,7 +139,7 @@
       align-items: flex-start;
     }
 
-    /* In-Game Frame (Guaranteed Infinite Stretch) */
+    /* In-Game Frame */
     .trp-frame {
       width: 555px;
       min-height: 680px;
@@ -296,7 +296,7 @@
       margin-top: 18px;
     }
 
-    /* Tabs */
+    /* Tabs & Filters */
     .trp-tabs {
       display: flex;
       gap: 6px;
@@ -319,6 +319,49 @@
       background: #3e321e;
       color: #f4d03f;
       border-color: #b88628;
+    }
+
+    /* Interactive Banner Grid */
+    .trp-banner-browser {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #101017;
+      border: 1px solid #262636;
+      border-radius: 5px;
+      margin-top: 6px;
+    }
+    .trp-banner-item {
+      background: #181822;
+      border: 1px solid #2e2e42;
+      border-radius: 4px;
+      padding: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .trp-banner-item:hover {
+      border-color: #d4af37;
+      transform: translateY(-2px);
+    }
+    .trp-banner-item img {
+      width: 100%;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 2px;
+      background: #08080c;
+    }
+    .trp-banner-item span {
+      display: block;
+      font-size: 10.5px;
+      color: #bbb;
+      margin-top: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     /* Icon Grid */
@@ -365,7 +408,6 @@
 </head>
 <body>
 
-  <!-- App Header -->
   <header class="trp-header">
     <div class="trp-title">
       ⚔ Total RP 3 Profile Studio
@@ -379,14 +421,13 @@
         <option value="horde">🩸 Crimson / Sin'dorei</option>
       </select>
 
-      <button type="button" class="trp-btn" onclick="openModal('bannerModal')">🖼 Add Banner / Texture</button>
+      <button type="button" class="trp-btn" onclick="openModal('bannerModal')">🖼 Banners &amp; Textures</button>
       <button type="button" class="trp-btn" onclick="openModal('gradModal')">🌈 Gradient</button>
       <button type="button" class="trp-btn" onclick="openModal('iconModal')">🛡 Full Icon Directory</button>
       <button type="button" class="trp-btn trp-btn-gold" onclick="copyTRPCode()">📋 Copy TRP Code</button>
     </div>
   </header>
 
-  <!-- Work Area -->
   <main class="trp-workspace">
     <section class="trp-col">
       <div class="trp-col-header">
@@ -417,49 +458,55 @@
     </section>
   </main>
 
-  <!-- Banner Modal -->
+  <!-- Interactive Banner Modal -->
   <div id="bannerModal" class="trp-modal">
-    <div class="trp-modal-content" style="max-width:540px;">
-      <h3>Insert In-Game Banner or Texture</h3>
-      <p class="trp-modal-sub">Accepts any in-game path, FileDataID, or direct URL.</p>
-
-      <label>Texture Path or FileDataID:</label>
-      <input type="text" id="imgPath" value="glues/models/ui_nightborneelf/6sm_lightray" oninput="updateBannerPreview(this.value)" placeholder="e.g. glues/models/ui_nightborneelf/6sm_lightray">
-
-      <div class="trp-grid-2" style="margin-top:6px;">
-        <div>
-          <label>Width (px):</label>
-          <input type="number" id="imgW" value="555">
-        </div>
-        <div>
-          <label>Height (px):</label>
-          <input type="number" id="imgH" value="120">
-        </div>
+    <div class="trp-modal-content" style="max-width:640px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>Banner &amp; Texture Explorer</h3>
+        <span id="bannerCountBadge" style="font-size:11px;color:#d4af37;background:#252534;padding:3px 8px;border-radius:4px;">Connecting to GitHub...</span>
       </div>
+      <p class="trp-modal-sub">Browse textures from your repository. Click any thumbnail to load its exact path and settings.</p>
 
-      <div class="trp-grid-2" style="margin-top:6px;">
-        <div>
-          <label>Quick Presets:</label>
-          <div style="display:flex;gap:4px;margin-top:4px;">
-            <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 300, ':l')">Backdrop (:l)</button>
-            <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 120, ':l')">Header (:l)</button>
-            <button type="button" class="trp-tab-btn" onclick="setSizePreset(256, 256, '')">Emblem</button>
+      <!-- Live Search Filter for Textures -->
+      <input type="text" id="bannerFilterInput" placeholder="Filter textures by name (e.g. 6sm, suramar, sky, lightray, frame)..." oninput="onBannerFilter(this.value)">
+
+      <!-- Interactive Gallery Grid -->
+      <div id="bannerBrowserGrid" class="trp-banner-browser" onscroll="handleBannerScroll(this)"></div>
+
+      <!-- Config & Sizing -->
+      <div style="background:#13131c;border:1px solid #272738;border-radius:6px;padding:12px;margin-top:10px;">
+        <label>Selected Texture Path:</label>
+        <input type="text" id="imgPath" value="glues/models/ui_nightborneelf/6sm_lightray">
+
+        <div class="trp-grid-2" style="margin-top:6px;">
+          <div>
+            <label>Width (px):</label>
+            <input type="number" id="imgW" value="555">
+          </div>
+          <div>
+            <label>Height (px):</label>
+            <input type="number" id="imgH" value="120">
           </div>
         </div>
-        <div>
-          <label>Placement / Layering:</label>
-          <select id="imgPos">
-            <option value=":l">Background Layer Left (:l)</option>
-            <option value=":r">Background Layer Right (:r)</option>
-            <option value="">Inline (Pushes text down)</option>
-          </select>
-        </div>
-      </div>
 
-      <!-- Live Dynamic Texture Preview -->
-      <div style="margin-top:14px;background:#101017;border:1px solid #272738;border-radius:6px;padding:10px;text-align:center;">
-        <span style="display:block;font-size:11px;color:#888;margin-bottom:6px;">Live Texture Preview</span>
-        <img id="bannerModalPreview" src="" style="max-width:100%;max-height:140px;object-fit:contain;border-radius:4px;" alt="Banner Preview">
+        <div class="trp-grid-2" style="margin-top:6px;">
+          <div>
+            <label>Quick Presets:</label>
+            <div style="display:flex;gap:4px;margin-top:4px;">
+              <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 300, ':l')">Backdrop (:l)</button>
+              <button type="button" class="trp-tab-btn" onclick="setSizePreset(555, 120, ':l')">Header (:l)</button>
+              <button type="button" class="trp-tab-btn" onclick="setSizePreset(256, 256, '')">Emblem</button>
+            </div>
+          </div>
+          <div>
+            <label>Placement / Layering:</label>
+            <select id="imgPos">
+              <option value=":l">Background Layer Left (:l)</option>
+              <option value=":r">Background Layer Right (:r)</option>
+              <option value="">Inline (Pushes text down)</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div class="trp-modal-actions">
@@ -543,7 +590,133 @@
   </div>
 
   <script>
-    // Universal WoW Asset Resolver: Local Repo -> Wago CDN -> GitHub Retail Art
+    let MASTER_BANNER_LIST = [];
+    let FILTERED_BANNER_LIST = [];
+    let currentBannerRenderIndex = 0;
+    const BANNER_PAGE_CHUNK = 30;
+
+    // Intelligent Environment Detector: Works 100% on live GitHub Pages
+    function detectGitHubLocation() {
+      const hostname = window.location.hostname;
+      const pathname = window.location.pathname;
+
+      if (hostname.endsWith('.github.io')) {
+        const username = hostname.replace('.github.io', '');
+        const segments = pathname.split('/').filter(Boolean);
+        const repo = segments[0] || '';
+        return { username, repo };
+      }
+      return null;
+    }
+
+    async function fetchGitHubTextureTree() {
+      const badge = document.getElementById('bannerCountBadge');
+      
+      // Check cached tree first to prevent GitHub rate limits
+      const cached = localStorage.getItem('trp_gh_textures');
+      if (cached) {
+        try {
+          MASTER_BANNER_LIST = JSON.parse(cached);
+          if (MASTER_BANNER_LIST.length > 0) {
+            FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
+            badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Ready`;
+            renderNextBannerBatch(true);
+            return;
+          }
+        } catch (e) { localStorage.removeItem('trp_gh_textures'); }
+      }
+
+      const location = detectGitHubLocation();
+      if (!location || !location.username || !location.repo) {
+        badge.textContent = 'Active (Direct Path Mode)';
+        return;
+      }
+
+      badge.textContent = 'Scanning GitHub repository...';
+
+      // Scan 'main' branch first, then 'master' as fallback
+      const branches = ['main', 'master'];
+      for (const branch of branches) {
+        try {
+          const apiUrl = `https://api.github.com/repos/${location.username}/${location.repo}/git/trees/${branch}?recursive=1`;
+          const res = await fetch(apiUrl);
+          if (res.ok) {
+            const data = await res.json();
+            if (data.tree && Array.isArray(data.tree)) {
+              MASTER_BANNER_LIST = data.tree
+                .filter(item => item.path.toLowerCase().startsWith('interface/') && item.path.toLowerCase().endsWith('.png'))
+                .map(item => item.path);
+
+              if (MASTER_BANNER_LIST.length > 0) {
+                localStorage.setItem('trp_gh_textures', JSON.stringify(MASTER_BANNER_LIST));
+                FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
+                badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Found`;
+                renderNextBannerBatch(true);
+                return;
+              }
+            }
+          }
+        } catch (err) {}
+      }
+
+      badge.textContent = 'Direct Path Mode Ready';
+    }
+
+    function renderNextBannerBatch(reset = false) {
+      const container = document.getElementById('bannerBrowserGrid');
+      if (reset) {
+        container.innerHTML = '';
+        currentBannerRenderIndex = 0;
+      }
+
+      const nextBatch = FILTERED_BANNER_LIST.slice(currentBannerRenderIndex, currentBannerRenderIndex + BANNER_PAGE_CHUNK);
+      nextBatch.forEach(filePath => {
+        const cleanTRPPath = filePath.replace(/^interface\//i, '').replace(/\.(png|jpg|blp)$/i, '');
+        const filename = cleanTRPPath.split('/').pop();
+
+        const card = document.createElement('div');
+        card.className = 'trp-banner-item';
+        card.onclick = () => {
+          document.getElementById('imgPath').value = cleanTRPPath;
+        };
+
+        const img = document.createElement('img');
+        img.src = `./${filePath}`;
+        img.loading = 'lazy';
+        img.alt = filename;
+        img.onerror = function() { this.style.display = 'none'; };
+
+        const label = document.createElement('span');
+        label.textContent = filename;
+        label.title = cleanTRPPath;
+
+        card.appendChild(img);
+        card.appendChild(label);
+        container.appendChild(card);
+      });
+
+      currentBannerRenderIndex += nextBatch.length;
+    }
+
+    function handleBannerScroll(el) {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+        if (currentBannerRenderIndex < FILTERED_BANNER_LIST.length) {
+          renderNextBannerBatch(false);
+        }
+      }
+    }
+
+    function onBannerFilter(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
+      } else {
+        FILTERED_BANNER_LIST = MASTER_BANNER_LIST.filter(path => path.toLowerCase().includes(q));
+      }
+      renderNextBannerBatch(true);
+    }
+
+    // Universal WoW Asset Resolver
     function resolveWoWTextureUrl(rawInput) {
       if (!rawInput) return '';
       const input = rawInput.trim();
@@ -570,23 +743,6 @@
         .replace(/\.(blp|png|jpg)$/i, '')
         .replace(/^interface\//i, '');
       return `https://raw.githubusercontent.com/keyboardturner/wow-ui-art/retail_png/${clean}.png`;
-    }
-
-    function updateBannerPreview(val) {
-      const prev = document.getElementById('bannerModalPreview');
-      if (val.trim()) {
-        const localUrl = resolveWoWTextureUrl(val);
-        const fallbackUrl = getOnlineFallbackUrl(val);
-        prev.onerror = function() {
-          if (this.src !== fallbackUrl) {
-            this.src = fallbackUrl;
-          } else {
-            this.onerror = null;
-            this.src = 'https://wow.zamimg.com/images/wow/container/parchment-header.png';
-          }
-        };
-        prev.src = localUrl;
-      }
     }
 
     function setSizePreset(w, h, dock) {
@@ -700,17 +856,15 @@
       closeModal('iconModal');
     }
 
-    // Parser Engine with Auto-Closing and Flow Balancing
+    // Parser Engine
     function parseTRPToHTML(input) {
       if (!input) return '';
       
-      // Escape HTML entities to prevent raw markup injection breaking DOM
       let html = input
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      // Headers & Paragraphs with alignment support (:c, :l, :r)
       const parseAlignedBlock = (tag, level, defaultAlign) => {
         const regex = new RegExp(`\\{${tag}(?::([clrCLR]))?\\}([\\s\\S]*?)\\{\\/${tag}\\}`, 'gi');
         return (str) => str.replace(regex, (_, align, content) => {
@@ -750,7 +904,7 @@
         return `<img src="${src}" alt="${iconName}" class="trp-inline-icon" style="width:${iconSize}px; height:${iconSize}px;" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';" />`;
       });
 
-      // Cleanup dangling unclosed TRP tags so they don't leak or break layout
+      // Cleanup dangling unclosed tags
       html = html.replace(/\{(?:h[1-3]|p|col|img|icon)[^}]*\}/gi, '');
       html = html.replace(/\{\/(?:h[1-3]|p|col)\}/gi, '');
 
@@ -809,8 +963,8 @@
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
-      if (id === 'bannerModal') {
-        updateBannerPreview(document.getElementById('imgPath').value);
+      if (id === 'bannerModal' && MASTER_BANNER_LIST.length === 0) {
+        fetchGitHubTextureTree();
       }
       if (id === 'iconModal' && MASTER_ICON_LIST.length <= STARTER_ICONS.length) {
         fetchFullIconManifest();
