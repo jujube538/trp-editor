@@ -117,6 +117,21 @@
       color: #fff;
     }
 
+    .trp-color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: inline-block;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.4);
+      margin: 0 2px;
+      vertical-align: middle;
+      transition: transform 0.1s;
+    }
+    .trp-color-dot:hover {
+      transform: scale(1.25);
+    }
+
     /* Main Workspace */
     .trp-workspace {
       display: grid;
@@ -213,7 +228,6 @@
       z-index: 2;
     }
 
-    /* The Three TRP Title Formats */
     .trp-frame .trp-h1 {
       font-family: 'Cinzel', serif;
       font-size: 20px;
@@ -244,7 +258,6 @@
       margin-bottom: 10px;
     }
 
-    /* TRP In-Game Links */
     .trp-frame .trp-link {
       color: #0070dd;
       text-decoration: underline;
@@ -347,6 +360,46 @@
       justify-content: flex-end;
       gap: 10px;
       margin-top: 18px;
+    }
+
+    /* Palette Swatches in Color Modal */
+    .trp-palette-group {
+      margin-top: 12px;
+    }
+    .trp-palette-group h5 {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #9e9eb0;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .trp-palette-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .trp-swatch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #101018;
+      border: 1px solid #28283a;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: #ddd;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .trp-swatch-btn:hover {
+      border-color: #6366f1;
+      background: #1c1c28;
+    }
+    .trp-swatch-chip {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.25);
     }
 
     /* Template Cards Grid */
@@ -525,6 +578,7 @@
 
       <button type="button" class="trp-btn trp-btn-blue" onclick="openModal('templateModal')">📑 Templates</button>
       <button type="button" class="trp-btn" onclick="openModal('bannerModal')">🖼 Banners &amp; Textures</button>
+      <button type="button" class="trp-btn" onclick="openModal('colorModal')">🎨 Text Color</button>
       <button type="button" class="trp-btn" onclick="openModal('gradModal')">🌈 Gradient</button>
       <button type="button" class="trp-btn" onclick="openModal('iconModal')">🛡 Full Icon Directory</button>
       <button type="button" class="trp-btn trp-btn-gold" onclick="copyTRPCode()">📋 Copy TRP Code</button>
@@ -533,12 +587,23 @@
 
   <!-- Tag Insertion Quick Bar -->
   <div class="trp-quick-bar">
-    <span style="font-size:11px;color:#888;margin-right:4px;">Format:</span>
-    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h1:c}', '{/h1}')">h1 (Main Title)</button>
-    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h2}', '{/h2}')">h2 (Header)</button>
-    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h3}', '{/h3}')">h3 (Sub-entry)</button>
-    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{p}', '{/p}')">p (Paragraph)</button>
-    <button type="button" class="trp-tag-btn" onclick="openModal('linkModal')">🔗 Link / URL</button>
+    <span style="font-size:11px;color:#888;margin-right:2px;">Format:</span>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h1:c}', '{/h1}')">h1</button>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h2}', '{/h2}')">h2</button>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h3}', '{/h3}')">h3</button>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{p}', '{/p}')">p</button>
+    <button type="button" class="trp-tag-btn" onclick="openModal('linkModal')">🔗 Link</button>
+    <span style="font-size:11px;color:#555;margin:0 4px;">|</span>
+    <span style="font-size:11px;color:#888;margin-right:2px;">Colors:</span>
+    <span class="trp-color-dot" style="background:#f4d03f;" title="Quel'dorei Gold (#f4d03f)" onclick="applyDirectColor('f4d03f')"></span>
+    <span class="trp-color-dot" style="background:#ffffff;" title="Pure White (#ffffff)" onclick="applyDirectColor('ffffff')"></span>
+    <span class="trp-color-dot" style="background:#e8e8e8;" title="Silver White (#e8e8e8)" onclick="applyDirectColor('e8e8e8')"></span>
+    <span class="trp-color-dot" style="background:#0070dd;" title="Rare Blue (#0070dd)" onclick="applyDirectColor('0070dd')"></span>
+    <span class="trp-color-dot" style="background:#a335ee;" title="Epic Purple (#a335ee)" onclick="applyDirectColor('a335ee')"></span>
+    <span class="trp-color-dot" style="background:#ff8000;" title="Legendary Orange (#ff8000)" onclick="applyDirectColor('ff8000')"></span>
+    <span class="trp-color-dot" style="background:#1eff00;" title="Uncommon Green (#1eff00)" onclick="applyDirectColor('1eff00')"></span>
+    <span class="trp-color-dot" style="background:#c41e3a;" title="Sin'dorei Red (#c41e3a)" onclick="applyDirectColor('c41e3a')"></span>
+    <button type="button" class="trp-tag-btn" style="padding:2px 6px;margin-left:4px;" onclick="openModal('colorModal')">More...</button>
     <span style="font-size:11px;color:#555;margin:0 4px;">|</span>
     <button type="button" class="trp-tag-btn" onclick="insertSnippet('{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}\n')">── Dots Divider ──</button>
   </div>
@@ -563,7 +628,7 @@
 {p}{icon:spell_holy_magicalsentry:18} {col:e8e8e8}Scholar of the arcane arts and mistress of localized temporal dilation. Seek her counsel with due decorum.{/col}{/p}
 
 {h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
-{h1:c}OOC INFORMATION{/h1}
+{h1:c}OUT OF CHARACTER{/h1}
 {p:c}{link*https://discord.gg/*Guild Discord*} 一 {link*https://spotify.com/*Character Theme Playlist*}{/p}</textarea>
     </section>
 
@@ -577,6 +642,65 @@
       </div>
     </section>
   </main>
+
+  <!-- Text Color Picker Modal -->
+  <div id="colorModal" class="trp-modal">
+    <div class="trp-modal-content" style="max-width:560px;">
+      <h3>Text Color Picker</h3>
+      <p class="trp-modal-sub">Wrap selected text or insert a simple <code>{col:RRGGBB}text{/col}</code> tag.</p>
+
+      <div class="trp-grid-2" style="align-items:center;">
+        <div>
+          <label>Pick Custom Color:</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="color" id="customColorPicker" value="#f4d03f" style="width:60px;height:40px;cursor:pointer;padding:0;" oninput="updateColorHexField(this.value)">
+            <input type="text" id="customColorHex" value="f4d03f" maxlength="6" style="font-family:'Fira Code', monospace;text-transform:uppercase;" oninput="updateColorPickerField(this.value)">
+          </div>
+        </div>
+        <div>
+          <label>Sample Preview:</label>
+          <div id="colorSamplePreview" style="background:#111118;padding:10px 14px;border-radius:5px;border:1px solid #2d2d3e;font-size:14px;font-weight:700;color:#f4d03f;text-align:center;">
+            Chronicles of the Sunwell
+          </div>
+        </div>
+      </div>
+
+      <!-- WoW Native Text Palette -->
+      <div class="trp-palette-group">
+        <h5>WoW Quality Palette</h5>
+        <div class="trp-palette-swatches">
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('9d9d9d')"><span class="trp-swatch-chip" style="background:#9d9d9d;"></span> Poor (#9d9d9d)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('ffffff')"><span class="trp-swatch-chip" style="background:#ffffff;"></span> Common (#ffffff)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('1eff00')"><span class="trp-swatch-chip" style="background:#1eff00;"></span> Uncommon (#1eff00)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('0070dd')"><span class="trp-swatch-chip" style="background:#0070dd;"></span> Rare (#0070dd)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('a335ee')"><span class="trp-swatch-chip" style="background:#a335ee;"></span> Epic (#a335ee)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('ff8000')"><span class="trp-swatch-chip" style="background:#ff8000;"></span> Legendary (#ff8000)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('e6cc80')"><span class="trp-swatch-chip" style="background:#e6cc80;"></span> Artifact (#e6cc80)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('00ccff')"><span class="trp-swatch-chip" style="background:#00ccff;"></span> Heirloom (#00ccff)</button>
+        </div>
+      </div>
+
+      <!-- RP Thematic Palette -->
+      <div class="trp-palette-group">
+        <h5>Thematic RP Swatches</h5>
+        <div class="trp-palette-swatches">
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('f4d03f')"><span class="trp-swatch-chip" style="background:#f4d03f;"></span> Highborne Gold (#f4d03f)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('e8e8e8')"><span class="trp-swatch-chip" style="background:#e8e8e8;"></span> Silver White (#e8e8e8)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('c41e3a')"><span class="trp-swatch-chip" style="background:#c41e3a;"></span> Sin'dorei Red (#c41e3a)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('a370f7')"><span class="trp-swatch-chip" style="background:#a370f7;"></span> Arcane Violet (#a370f7)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('00ff96')"><span class="trp-swatch-chip" style="background:#00ff96;"></span> Fel Fire (#00ff96)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('c79c6e')"><span class="trp-swatch-chip" style="background:#c79c6e;"></span> Warm Parchment (#c79c6e)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('2b1d0c')"><span class="trp-swatch-chip" style="background:#2b1d0c;"></span> Ink Dark (#2b1d0c)</button>
+          <button type="button" class="trp-swatch-btn" onclick="pickPaletteColor('888888')"><span class="trp-swatch-chip" style="background:#888888;"></span> OOC Muted (#888888)</button>
+        </div>
+      </div>
+
+      <div class="trp-modal-actions">
+        <button type="button" class="trp-btn" onclick="closeModal('colorModal')">Cancel</button>
+        <button type="button" class="trp-btn trp-btn-gold" onclick="insertColorTag()">Apply Color</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Template Selector Modal -->
   <div id="templateModal" class="trp-modal">
@@ -769,7 +893,38 @@
     let currentBannerRenderIndex = 0;
     const BANNER_PAGE_CHUNK = 30;
 
-    // The Three Canonical Total RP 3 Profile Templates
+    // Direct and Modal Color Handling
+    function updateColorHexField(hexVal) {
+      const cleanHex = hexVal.replace('#', '').toLowerCase();
+      document.getElementById('customColorHex').value = cleanHex;
+      document.getElementById('colorSamplePreview').style.color = '#' + cleanHex;
+    }
+
+    function updateColorPickerField(hexVal) {
+      let cleanHex = hexVal.replace(/[^0-9a-fA-F]/g, '');
+      if (cleanHex.length === 6) {
+        document.getElementById('customColorPicker').value = '#' + cleanHex;
+        document.getElementById('colorSamplePreview').style.color = '#' + cleanHex;
+      }
+    }
+
+    function pickPaletteColor(hex) {
+      document.getElementById('customColorPicker').value = '#' + hex;
+      document.getElementById('customColorHex').value = hex;
+      document.getElementById('colorSamplePreview').style.color = '#' + hex;
+    }
+
+    function applyDirectColor(hex) {
+      wrapSelection(`{col:${hex}}`, `{/col}`);
+    }
+
+    function insertColorTag() {
+      const hex = document.getElementById('customColorHex').value.trim() || 'ffffff';
+      wrapSelection(`{col:${hex}}`, `{/col}`);
+      closeModal('colorModal');
+    }
+
+    // Three Canonical Total RP 3 Profile Templates
     const TRP_TEMPLATES = {
       1: `{img:glues/models/ui_nightborneelf/6sm_lightray:555:120:l}
 {h1:c}{col:f4d03f}Character Full Name{/col}{/h1}
@@ -1140,7 +1295,7 @@
       closeModal('iconModal');
     }
 
-    // Parser Engine (Three Titles, Paragraphs, Links, Colors, Textures, Icons)
+    // Parser Engine
     function parseTRPToHTML(input) {
       if (!input) return '';
       
@@ -1149,7 +1304,6 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      // Headers {h1}, {h2}, {h3} & Paragraphs {p} with alignment support (:c, :l, :r)
       const parseAlignedBlock = (tag, level, defaultAlign) => {
         const regex = new RegExp(`\\{${tag}(?::([clrCLR]))?\\}([\\s\\S]*?)\\{\\/${tag}\\}`, 'gi');
         return (str) => str.replace(regex, (_, align, content) => {
@@ -1311,7 +1465,7 @@
         },
         deathknight: {
           bg: '#0c1117',
-          gradient: 'radial-gradient(circle at 50% 20%, rgba(25, 65, 95, 0.35) 0%, rgba(8, 12, 18, 0.95) 100%)',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(255, 65, 95, 0.35) 0%, rgba(8, 12, 18, 0.95) 100%)',
           color: '#d0e5f2',
           border: '#214259',
           shadow: '0 6px 24px rgba(0,0,0,0.9), inset 0 0 55px rgba(25, 80, 120, 0.35)'
