@@ -70,6 +70,14 @@
     .trp-btn-gold:hover {
       background: #b07e24;
     }
+    .trp-btn-blue {
+      background: #1e3a5f;
+      color: #93c5fd;
+      border-color: #2563eb;
+    }
+    .trp-btn-blue:hover {
+      background: #254977;
+    }
     .trp-select {
       background: #252532;
       color: #e2e8f0;
@@ -82,13 +90,40 @@
       max-width: 220px;
     }
 
+    /* Sub Toolbar for TRP Tags */
+    .trp-quick-bar {
+      background: #13131c;
+      border-bottom: 1px solid #232332;
+      padding: 6px 24px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .trp-tag-btn {
+      background: #1e1e2c;
+      border: 1px solid #34344a;
+      color: #cbd5e1;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Fira Code', monospace;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .trp-tag-btn:hover {
+      background: #2d2d42;
+      border-color: #818cf8;
+      color: #fff;
+    }
+
     /* Main Workspace */
     .trp-workspace {
       display: grid;
       grid-template-columns: 1fr 600px;
       flex: 1;
       gap: 20px;
-      padding: 20px 24px;
+      padding: 16px 24px;
       background: #0f0f15;
     }
     @media (max-width: 1120px) {
@@ -140,7 +175,7 @@
       align-items: flex-start;
     }
 
-    /* In-Game Frame (Expands Continuously) */
+    /* In-Game Frame */
     .trp-frame {
       width: 555px;
       min-height: 680px;
@@ -178,14 +213,16 @@
       z-index: 2;
     }
 
+    /* The Three TRP Title Formats */
     .trp-frame .trp-h1 {
       font-family: 'Cinzel', serif;
       font-size: 20px;
       font-weight: 700;
       color: #4a1c0d;
-      margin: 14px 0 8px 0;
+      margin: 16px 0 8px 0;
       border-bottom: 1px solid rgba(90, 65, 35, 0.25);
       padding-bottom: 4px;
+      letter-spacing: 0.5px;
     }
     .trp-frame .trp-h2 {
       font-family: 'Cinzel', serif;
@@ -193,8 +230,11 @@
       font-weight: 700;
       color: #5c2712;
       margin: 14px 0 6px 0;
+      border-bottom: 1px dotted rgba(90, 65, 35, 0.15);
+      padding-bottom: 2px;
     }
     .trp-frame .trp-h3 {
+      font-family: 'Merriweather', Georgia, serif;
       font-size: 14px;
       font-weight: 700;
       color: #3b2014;
@@ -202,6 +242,18 @@
     }
     .trp-frame .trp-p {
       margin-bottom: 10px;
+    }
+
+    /* TRP In-Game Links */
+    .trp-frame .trp-link {
+      color: #0070dd;
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+    .trp-frame .trp-link:hover {
+      color: #00b4ff;
     }
 
     /* Textures & Icons */
@@ -295,6 +347,43 @@
       justify-content: flex-end;
       gap: 10px;
       margin-top: 18px;
+    }
+
+    /* Template Cards Grid */
+    .trp-template-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (max-width: 650px) {
+      .trp-template-grid { grid-template-columns: 1fr; }
+    }
+    .trp-template-card {
+      background: #11111a;
+      border: 1px solid #2c2c40;
+      border-radius: 6px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .trp-template-card:hover {
+      border-color: #d4af37;
+      transform: translateY(-2px);
+    }
+    .trp-template-card h4 {
+      font-size: 13.5px;
+      color: #f1f1f5;
+      margin-bottom: 6px;
+    }
+    .trp-template-card p {
+      font-size: 11.5px;
+      color: #9292a4;
+      line-height: 1.4;
+      margin-bottom: 12px;
     }
 
     /* Tabs & Filters */
@@ -416,12 +505,9 @@
     </div>
     <div class="trp-nav-btns">
       <select id="bgThemePicker" class="trp-select" onchange="applyTRPBackground(this.value)">
-        <!-- Core Classics -->
         <option value="parchment">📜 Parchment (Default)</option>
         <option value="parchment_dark">📜 Dark Parchment</option>
         <option value="aged_paper">📜 Aged / Weathered Paper</option>
-        
-        <!-- Factions & Alliances -->
         <option value="alliance">🦁 Alliance (Lordaeron Marble)</option>
         <option value="horde">🩸 Horde (Sin'dorei Crimson)</option>
         <option value="ironforge">🛡 Ironforge / Slate Stone</option>
@@ -430,8 +516,6 @@
         <option value="bilgewater">⚙ Bilgewater Rust &amp; Oil</option>
         <option value="forsaken">☠ Undercity / Rot Plague</option>
         <option value="pandaren">🎋 Pandaren Bamboo Silk</option>
-
-        <!-- Cosmic & Magic -->
         <option value="void">🌌 Void / Midnight Star</option>
         <option value="arcane">🔮 Suramar / Ley Arcane</option>
         <option value="fel">🔥 Fel / Burning Legion</option>
@@ -439,12 +523,25 @@
         <option value="shaman">⚡ Elemental Earth &amp; Maelstrom</option>
       </select>
 
+      <button type="button" class="trp-btn trp-btn-blue" onclick="openModal('templateModal')">📑 Templates</button>
       <button type="button" class="trp-btn" onclick="openModal('bannerModal')">🖼 Banners &amp; Textures</button>
       <button type="button" class="trp-btn" onclick="openModal('gradModal')">🌈 Gradient</button>
       <button type="button" class="trp-btn" onclick="openModal('iconModal')">🛡 Full Icon Directory</button>
       <button type="button" class="trp-btn trp-btn-gold" onclick="copyTRPCode()">📋 Copy TRP Code</button>
     </div>
   </header>
+
+  <!-- Tag Insertion Quick Bar -->
+  <div class="trp-quick-bar">
+    <span style="font-size:11px;color:#888;margin-right:4px;">Format:</span>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h1:c}', '{/h1}')">h1 (Main Title)</button>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h2}', '{/h2}')">h2 (Header)</button>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{h3}', '{/h3}')">h3 (Sub-entry)</button>
+    <button type="button" class="trp-tag-btn" onclick="wrapSelection('{p}', '{/p}')">p (Paragraph)</button>
+    <button type="button" class="trp-tag-btn" onclick="openModal('linkModal')">🔗 Link / URL</button>
+    <span style="font-size:11px;color:#555;margin:0 4px;">|</span>
+    <button type="button" class="trp-tag-btn" onclick="insertSnippet('{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}\n')">── Dots Divider ──</button>
+  </div>
 
   <!-- Work Area -->
   <main class="trp-workspace">
@@ -463,7 +560,11 @@
 {p}{icon:inv_misc_book_09:18} {col:e8e8e8}A Quel'dorei arcanist garbed in star-spun silk robes. Delicate arcane chronometers tic silently upon her mantle.{/col}{/p}
 
 {h3:l}{col:ffffff}Chronicles &amp; Notes{/col}{/h3}
-{p}{icon:spell_holy_magicalsentry:18} {col:e8e8e8}Scholar of the arcane arts and mistress of localized temporal dilation. Seek her counsel with due decorum.{/col}{/p}</textarea>
+{p}{icon:spell_holy_magicalsentry:18} {col:e8e8e8}Scholar of the arcane arts and mistress of localized temporal dilation. Seek her counsel with due decorum.{/col}{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}OOC INFORMATION{/h1}
+{p:c}{link*https://discord.gg/*Guild Discord*} 一 {link*https://spotify.com/*Character Theme Playlist*}{/p}</textarea>
     </section>
 
     <section class="trp-col">
@@ -476,6 +577,63 @@
       </div>
     </section>
   </main>
+
+  <!-- Template Selector Modal -->
+  <div id="templateModal" class="trp-modal">
+    <div class="trp-modal-content">
+      <h3>Select a Profile Template</h3>
+      <p class="trp-modal-sub">Choose one of the three standard Total RP 3 design frameworks.</p>
+
+      <div class="trp-template-grid">
+        <div class="trp-template-card" onclick="loadTemplate(1)">
+          <div>
+            <h4>1. Classic Biography</h4>
+            <p>Narrative-driven layout featuring large atmospheric header, at-a-glance traits, character history, and OOC notes.</p>
+          </div>
+          <button type="button" class="trp-btn trp-btn-gold" style="width:100%;justify-content:center;">Apply Template</button>
+        </div>
+
+        <div class="trp-template-card" onclick="loadTemplate(2)">
+          <div>
+            <h4>2. Dossier / Sheet</h4>
+            <p>Structured character sheet featuring identity badges, allegiances, physical appearance breakdown, abilities, and inventory.</p>
+          </div>
+          <button type="button" class="trp-btn trp-btn-gold" style="width:100%;justify-content:center;">Apply Template</button>
+        </div>
+
+        <div class="trp-template-card" onclick="loadTemplate(3)">
+          <div>
+            <h4>3. Hooks &amp; Rumors</h4>
+            <p>Interactive walk-up friendly profile with prominent roleplay hooks, rumor tables, and social/combat boundaries.</p>
+          </div>
+          <button type="button" class="trp-btn trp-btn-gold" style="width:100%;justify-content:center;">Apply Template</button>
+        </div>
+      </div>
+
+      <div class="trp-modal-actions">
+        <button type="button" class="trp-btn" onclick="closeModal('templateModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link Insertion Modal -->
+  <div id="linkModal" class="trp-modal">
+    <div class="trp-modal-content" style="max-width:480px;">
+      <h3>Insert In-Game Link</h3>
+      <p class="trp-modal-sub">Generates Total RP 3's native <code>{link*URL*Display Text}</code> markup.</p>
+
+      <label>Destination URL:</label>
+      <input type="text" id="linkUrl" placeholder="https://discord.gg/your-guild or https://carrd.co">
+
+      <label>Display Label:</label>
+      <input type="text" id="linkText" placeholder="Guild Discord, Character Playlist, Art Gallery...">
+
+      <div class="trp-modal-actions">
+        <button type="button" class="trp-btn" onclick="closeModal('linkModal')">Cancel</button>
+        <button type="button" class="trp-btn trp-btn-gold" onclick="insertLinkTag()">Insert Link</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Interactive Banner Modal -->
   <div id="bannerModal" class="trp-modal">
@@ -610,6 +768,119 @@
     let FILTERED_BANNER_LIST = [];
     let currentBannerRenderIndex = 0;
     const BANNER_PAGE_CHUNK = 30;
+
+    // The Three Canonical Total RP 3 Profile Templates
+    const TRP_TEMPLATES = {
+      1: `{img:glues/models/ui_nightborneelf/6sm_lightray:555:120:l}
+{h1:c}{col:f4d03f}Character Full Name{/col}{/h1}
+{p:c}{col:b8a078}Titles, Epithets, or Clan Heritage{/col}{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}AT FIRST GLANCE{/h1}
+
+{p}{icon:inv_misc_eye_01:18} {col:ffffff}Presence &amp; Demeanor:{/col} {col:d5c2a5}A poised figure of deliberate step and reserved composure, bearing the distinctive poise of seasoned nobility.{/col}{/p}
+
+{p}{icon:inv_chest_cloth_17:18} {col:ffffff}Attire &amp; Vestments:{/col} {col:d5c2a5}Draped in finely woven ceremonial robes lined with silver embroidery, well-kept despite long travel.{/col}{/p}
+
+{p}{icon:inv_jewelry_necklace_07:18} {col:ffffff}Prominent Keepsake:{/col} {col:d5c2a5}An antique chronometer hangs quietly against their chest, pulsing with faint arcane light.{/col}{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}CHRONICLES &amp; HISTORY{/h1}
+
+{h2:l}Chapter I: Heritage of the Highborne{/h2}
+{p}Write the character's origins, lineage, or formative years here. The parchment layout allows long-form writing to flow naturally without cutoffs.{/p}
+
+{h2:l}Chapter II: The Modern Era{/h2}
+{p}Describe recent campaigns, alliances, guild affiliations, and current goals across Azeroth.{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}OUT OF CHARACTER{/h1}
+{p:c}{link*https://discord.gg/*Guild Discord*} 一 {link*https://spotify.com/*Character Theme Music*}{/p}
+{p:c}{col:888888}Open to walk-up RP, political intrigue, and cooperative story arcs.{/col}{/p}`,
+
+      2: `{img:glues/models/ui_nightborneelf/suramar_sky_clouds01_nightscreen:555:180:l}
+{h1:c}{col:e5c158}OFFICIAL DOSSIER{/col}{/h1}
+{p:c}{col:d0c0a0}Subject Record #884-A // Authorized Eyes Only{/col}{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}IDENTIFICATION{/h1}
+
+{p}{icon:inv_misc_head_elf_01:18} {col:ffffff}Name:{/col} Seleray Dawnheart{/p}
+{p}{icon:trade_engineering:18} {col:ffffff}Rank / Status:{/col} Arcanist &amp; Chronicler{/p}
+{p}{icon:inv_shield_05:18} {col:ffffff}Allegiance:{/col} The Alliance / The Silver Covenant{/p}
+{p}{icon:inv_misc_pocketwatch_01:18} {col:ffffff}Discipline:{/col} Chronomancy &amp; Transmutation{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}ARSENAL &amp; CAPABILITIES{/h1}
+
+{h3:l}{icon:spell_arcane_portalshattrath:18} Temporal Acceleration{/h3}
+{p}The ability to condense localized temporal currents, accelerating physical movement and spell incantations over brief bursts.{/p}
+
+{h3:l}{icon:spell_holy_magicalsentry:18} Stasis Barrier{/h3}
+{p}Conjures a resilient woven threshold that dampens kinetic force and dispels incoming projectiles in suspended motion.{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}EQUIPMENT &amp; RELICS{/h1}
+{p}{icon:inv_staff_30:18} {col:f4d03f}Spire of Epochs:{/col} An heirloom stave tipped with focused Sunwell quartz.{/p}
+{p}{icon:inv_scroll_03:18} {col:f4d03f}Bound Grimoire:{/col} Notes on ancient Highborne planar topology.{/p}`,
+
+      3: `{h1:c}{col:f4d03f}ROLEPLAY HOOKS &amp; RUMORS{/col}{/h1}
+{p:c}{col:a69076}Walk-ups always welcome! Feel free to whisper or interact.{/col}{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}HOOKS FOR INTERACTION{/h1}
+
+{p}{icon:inv_misc_book_09:18} {col:e0d0b0}Scholar Seeking Tomes:{/col} Frequently found searching libraries, antiquities markets, and arcane vaults for pre-Sundering historical archives.{/p}
+
+{p}{icon:inv_potion_51:18} {col:e0d0b0}Alchemical Patron:{/col} Offers generous coin for rare temporal reagents, sands of time, and primordial dust.{/p}
+
+{p}{icon:inv_sword_04:18} {col:e0d0b0}Noble Heritage:{/col} Recognizable to Quel'dorei courtiers or those who recall the northern estates prior to the Third War.{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}RUMORS &amp; HEARSAY{/h1}
+
+{h3:l}{col:85a3e0}What scholars say:{/col}{/h3}
+{p}“She spent over a century cataloging leylines beneath Dalaran before the city fell. If an anomaly exists, she knows its signature.”{/p}
+
+{h3:l}{col:d18585}What taverns whisper:{/col}{/h3}
+{p}“Don't wager dice near her table—she sees the toss before the cup even hits the oak.”{/p}
+
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}PREFERENCES &amp; CONTACT{/h1}
+{p:c}{icon:achievement_arena_2v2_7:18} Combat: Emote / Roll-based // {icon:inv_letter_15:18} Letters: Always open via in-game mail{/p}
+{p:c}{link*https://discord.gg/*Join Discord Server*}{/p}`
+    };
+
+    function loadTemplate(num) {
+      if (confirm("Apply this template? This will replace your current editor text.")) {
+        document.getElementById('trpInput').value = TRP_TEMPLATES[num];
+        renderTRP();
+        closeModal('templateModal');
+      }
+    }
+
+    function wrapSelection(openTag, closeTag) {
+      const txt = document.getElementById('trpInput');
+      const start = txt.selectionStart;
+      const end = txt.selectionEnd;
+      const selected = txt.value.substring(start, end) || 'Sample Text';
+      const replacement = openTag + selected + closeTag;
+      txt.value = txt.value.substring(0, start) + replacement + txt.value.substring(end);
+      txt.focus();
+      txt.selectionStart = start + openTag.length;
+      txt.selectionEnd = start + openTag.length + selected.length;
+      renderTRP();
+    }
+
+    function insertLinkTag() {
+      const url = document.getElementById('linkUrl').value.trim();
+      const label = document.getElementById('linkText').value.trim() || 'Link';
+      if (!url) return;
+      insertSnippet(`{link*${url}*${label}}`);
+      document.getElementById('linkUrl').value = '';
+      document.getElementById('linkText').value = '';
+      closeModal('linkModal');
+    }
 
     function detectGitHubLocation() {
       const hostname = window.location.hostname;
@@ -869,7 +1140,7 @@
       closeModal('iconModal');
     }
 
-    // Parser Engine
+    // Parser Engine (Three Titles, Paragraphs, Links, Colors, Textures, Icons)
     function parseTRPToHTML(input) {
       if (!input) return '';
       
@@ -878,6 +1149,7 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
+      // Headers {h1}, {h2}, {h3} & Paragraphs {p} with alignment support (:c, :l, :r)
       const parseAlignedBlock = (tag, level, defaultAlign) => {
         const regex = new RegExp(`\\{${tag}(?::([clrCLR]))?\\}([\\s\\S]*?)\\{\\/${tag}\\}`, 'gi');
         return (str) => str.replace(regex, (_, align, content) => {
@@ -895,7 +1167,12 @@
       html = parseAlignedBlock('h3', 'h3', 'left')(html);
       html = parseAlignedBlock('p', 'p', 'left')(html);
 
-      // Colors
+      // Links: {link*URL*Text} or {url*URL*Text}
+      html = html.replace(/\{(?:link|url)\*([^*]+)\*([^*]+)\}/gi, function(_, url, text) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="trp-link" title="Open: ${url}">${text}</a>`;
+      });
+
+      // Colors: {col:RRGGBB}...{/col}
       html = html.replace(/\{col:([0-9a-fA-F]{6})\}([\s\S]*?)\{\/col\}/gi, '<span style="color: #$1;">$2</span>');
 
       // Images / Banners
@@ -917,7 +1194,7 @@
         return `<img src="${src}" alt="${iconName}" class="trp-inline-icon" style="width:${iconSize}px; height:${iconSize}px;" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';" />`;
       });
 
-      html = html.replace(/\{(?:h[1-3]|p|col|img|icon)[^}]*\}/gi, '');
+      html = html.replace(/\{(?:h[1-3]|p|col|img|icon|link|url)[^}]*\}/gi, '');
       html = html.replace(/\{\/(?:h[1-3]|p|col)\}/gi, '');
 
       return html.replace(/\n/g, '<br />');
@@ -929,7 +1206,6 @@
       if (out) out.innerHTML = parseTRPToHTML(raw);
     }
 
-    // Extended TRP Background Preset Palette
     function applyTRPBackground(themeKey) {
       const frame = document.getElementById('trpOutput');
       if (!frame) return;
