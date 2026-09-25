@@ -169,7 +169,6 @@
       font-family: 'Cinzel', serif;
       font-size: 20px;
       font-weight: 700;
-      text-align: center;
       color: #4a1c0d;
       margin: 12px 0 8px 0;
       border-bottom: 1px solid rgba(90, 65, 35, 0.25);
@@ -382,9 +381,12 @@
         <span>Paste or edit</span>
       </div>
       <textarea id="trpInput" spellcheck="false" oninput="renderTRP()">{img:glues/models/ui_nightborneelf/6sm_lightray:555:120:l}
-{h1}{col:f4d03f}Lady Seleray Dawnheart{/col}{/h1}
+{h1:c}{col:f4d03f}Lady Seleray Dawnheart{/col}{/h1}
 
-{h2}{col:ffffff}At First Glance{/col}{/h2}
+{h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
+{h1:c}HOOKS{/h1}
+
+{h2:l}{col:ffffff}At First Glance{/col}{/h2}
 {p}{icon:inv_misc_book_09:18} {col:e8e8e8}A Quel'dorei arcanist garbed in star-spun silk robes. Delicate arcane chronometers tic silently upon her mantle.{/col}{/p}
 
 {h3}{col:ffffff}Chronicles &amp; Notes{/col}{/h3}
@@ -533,27 +535,22 @@
       if (!rawInput) return '';
       const input = rawInput.trim();
 
-      // 1. Direct Web URLs
       if (input.startsWith('http://') || input.startsWith('https://')) {
         return input;
       }
 
-      // 2. Numeric FileDataID (from wow.export or Wago)
       if (/^\d+$/.test(input)) {
         return `https://wago.tools/textures/${input}/render`;
       }
 
-      // 3. Clean up the path format
       let clean = input
         .replace(/\\/g, '/')
         .replace(/\.(blp|png|jpg)$/i, '')
         .replace(/^interface\//i, '');
 
-      // Check your uploaded repository folder directly
       return `./interface/${clean}.png`;
     }
 
-    // Secondary fallback URL generator for parseTRPToHTML
     function getOnlineFallbackUrl(rawInput) {
       const clean = rawInput.trim()
         .replace(/\\/g, '/')
@@ -698,13 +695,28 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      html = html.replace(/\{h1\}([\s\S]*?)\{\/h1\}/gi, '<h1 class="trp-h1">$1</h1>');
-      html = html.replace(/\{h2\}([\s\S]*?)\{\/h2\}/gi, '<h2 class="trp-h2">$1</h2>');
-      html = html.replace(/\{h3\}([\s\S]*?)\{\/h3\}/gi, '<h3 class="trp-h3">$1</h3>');
-      html = html.replace(/\{p\}([\s\S]*?)\{\/p\}/gi, '<p class="trp-p">$1</p>');
+      // Headers & Paragraphs with alignment support (:c, :l, :r)
+      const parseAlignedBlock = (tag, level, defaultAlign) => {
+        const regex = new RegExp(`\\{${tag}(?::([clrCLR]))?\\}([\\s\\S]*?)\\{\\/${tag}\\}`, 'gi');
+        return (str) => str.replace(regex, (_, align, content) => {
+          let textAlign = defaultAlign;
+          if (align) {
+            const a = align.toLowerCase();
+            textAlign = a === 'c' ? 'center' : (a === 'r' ? 'right' : 'left');
+          }
+          return `<${level} class="trp-${tag}" style="text-align: ${textAlign};">${content}</${level}>`;
+        });
+      };
 
+      html = parseAlignedBlock('h1', 'h1', 'center')(html);
+      html = parseAlignedBlock('h2', 'h2', 'left')(html);
+      html = parseAlignedBlock('h3', 'h3', 'left')(html);
+      html = parseAlignedBlock('p', 'p', 'left')(html);
+
+      // Colors
       html = html.replace(/\{col:([0-9a-fA-F]{6})\}([\s\S]*?)\{\/col\}/gi, '<span style="color: #$1;">$2</span>');
 
+      // Images / Banners
       html = html.replace(/\{img:([^:]+):(\d+):(\d+)(?::([lrLR]))?\}/gi, function(_, path, w, h, dock) {
         const localSrc = resolveWoWTextureUrl(path);
         const fallbackSrc = getOnlineFallbackUrl(path);
@@ -715,6 +727,7 @@
         return `<img src="${localSrc}" alt="Texture" class="trp-texture ${dockClass}" style="width:${w}px; height:${h}px; max-width:100%; object-fit:cover;" onerror="if(this.src!='${fallbackSrc}'){this.src='${fallbackSrc}';}else{this.onerror=null;this.src='https://wow.zamimg.com/images/wow/container/parchment-header.png';}" />`;
       });
 
+      // Icons
       html = html.replace(/\{icon:([^:]+)(?::(\d+))?\}/gi, function(_, iconName, size) {
         const iconSize = size ? size : 18;
         const clean = iconName.trim().toLowerCase().replace(/\.(blp|png)$/i, '');
