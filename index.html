@@ -615,7 +615,7 @@
         <span>TRP Markup</span>
         <span>Paste or edit</span>
       </div>
-      <textarea id="trpInput" spellcheck="false" oninput="renderTRP()">{img:glues/models/ui_nightborneelf/6sm_lightray:555:120:l}
+      <textarea id="trpInput" spellcheck="false" oninput="renderTRP()">{img:interface/glues/models/ui_nightborneelf/6sm_lightray:555:120:l}
 {h1:c}{col:f4d03f}Lady Seleray Dawnheart{/col}{/h1}
 
 {h2:c}. . . . . . . . . . . . . . . . . . . . . . . . {/h2}
@@ -766,15 +766,15 @@
         <h3>Banner &amp; Texture Explorer</h3>
         <span id="bannerCountBadge" style="font-size:11px;color:#d4af37;background:#252534;padding:3px 8px;border-radius:4px;">Connecting to GitHub...</span>
       </div>
-      <p class="trp-modal-sub">Browse textures from your repository. Click any thumbnail to load its exact path and settings.</p>
+      <p class="trp-modal-sub">Browse textures from your repository. Click any thumbnail to load its exact in-game <code>interface/</code> path.</p>
 
       <input type="text" id="bannerFilterInput" placeholder="Filter textures by name (e.g. 6sm, suramar, sky, lightray, frame)..." oninput="onBannerFilter(this.value)">
 
       <div id="bannerBrowserGrid" class="trp-banner-browser" onscroll="handleBannerScroll(this)"></div>
 
       <div style="background:#13131c;border:1px solid #272738;border-radius:6px;padding:12px;margin-top:10px;">
-        <label>Selected Texture Path:</label>
-        <input type="text" id="imgPath" value="glues/models/ui_nightborneelf/6sm_lightray">
+        <label>Selected Texture Path (Starts with <code>interface/</code>):</label>
+        <input type="text" id="imgPath" value="interface/glues/models/ui_nightborneelf/6sm_lightray">
 
         <div class="trp-grid-2" style="margin-top:6px;">
           <div>
@@ -926,7 +926,7 @@
 
     // Three Canonical Total RP 3 Profile Templates
     const TRP_TEMPLATES = {
-      1: `{img:glues/models/ui_nightborneelf/6sm_lightray:555:120:l}
+      1: `{img:interface/glues/models/ui_nightborneelf/6sm_lightray:555:120:l}
 {h1:c}{col:f4d03f}Character Full Name{/col}{/h1}
 {p:c}{col:b8a078}Titles, Epithets, or Clan Heritage{/col}{/p}
 
@@ -953,7 +953,7 @@
 {p:c}{link*https://discord.gg/*Guild Discord*} 一 {link*https://spotify.com/*Character Theme Music*}{/p}
 {p:c}{col:888888}Open to walk-up RP, political intrigue, and cooperative story arcs.{/col}{/p}`,
 
-      2: `{img:glues/models/ui_nightborneelf/suramar_sky_clouds01_nightscreen:555:180:l}
+      2: `{img:interface/glues/models/ui_nightborneelf/suramar_sky_clouds01_nightscreen:555:180:l}
 {h1:c}{col:e5c158}OFFICIAL DOSSIER{/col}{/h1}
 {p:c}{col:d0c0a0}Subject Record #884-A // Authorized Eyes Only{/col}{/p}
 
@@ -1110,13 +1110,17 @@
 
       const nextBatch = FILTERED_BANNER_LIST.slice(currentBannerRenderIndex, currentBannerRenderIndex + BANNER_PAGE_CHUNK);
       nextBatch.forEach(filePath => {
-        const cleanTRPPath = filePath.replace(/^interface\//i, '').replace(/\.(png|jpg|blp)$/i, '');
-        const filename = cleanTRPPath.split('/').pop();
+        // Enforce in-game TRP path starting with interface/
+        let inGamePath = filePath.replace(/\.(png|jpg|blp)$/i, '');
+        if (!inGamePath.toLowerCase().startsWith('interface/')) {
+          inGamePath = 'interface/' + inGamePath;
+        }
+        const filename = inGamePath.split('/').pop();
 
         const card = document.createElement('div');
         card.className = 'trp-banner-item';
         card.onclick = () => {
-          document.getElementById('imgPath').value = cleanTRPPath;
+          document.getElementById('imgPath').value = inGamePath;
         };
 
         const img = document.createElement('img');
@@ -1127,7 +1131,7 @@
 
         const label = document.createElement('span');
         label.textContent = filename;
-        label.title = cleanTRPPath;
+        label.title = inGamePath;
 
         card.appendChild(img);
         card.appendChild(label);
@@ -1155,7 +1159,7 @@
       renderNextBannerBatch(true);
     }
 
-    // Universal WoW Asset Resolver
+    // Universal WoW Asset Resolver (Accepts in-game interface/... paths cleanly)
     function resolveWoWTextureUrl(rawInput) {
       if (!rawInput) return '';
       const input = rawInput.trim();
@@ -1168,6 +1172,7 @@
         return `https://wago.tools/textures/${input}/render`;
       }
 
+      // Normalize: Strip leading interface/ and file extensions to locate ./interface/...
       let clean = input
         .replace(/\\/g, '/')
         .replace(/\.(blp|png|jpg)$/i, '')
@@ -1191,10 +1196,16 @@
     }
 
     function insertImageTag() {
-      const path = document.getElementById('imgPath').value.trim();
+      let path = document.getElementById('imgPath').value.trim();
       const w = document.getElementById('imgW').value.trim();
       const h = document.getElementById('imgH').value.trim();
       const pos = document.getElementById('imgPos').value;
+
+      // Ensure path always includes interface/ for in-game TRP compatibility
+      if (!path.startsWith('http') && !/^\d+$/.test(path) && !path.toLowerCase().startsWith('interface/')) {
+        path = 'interface/' + path;
+      }
+
       insertSnippet(`\n{img:${path}:${w}:${h}${pos}}\n`);
       closeModal('bannerModal');
     }
@@ -1465,7 +1476,7 @@
         },
         deathknight: {
           bg: '#0c1117',
-          gradient: 'radial-gradient(circle at 50% 20%, rgba(255, 65, 95, 0.35) 0%, rgba(8, 12, 18, 0.95) 100%)',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(25, 65, 95, 0.35) 0%, rgba(8, 12, 18, 0.95) 100%)',
           color: '#d0e5f2',
           border: '#214259',
           shadow: '0 6px 24px rgba(0,0,0,0.9), inset 0 0 55px rgba(25, 80, 120, 0.35)'
