@@ -79,6 +79,7 @@
       font-size: 12.5px;
       cursor: pointer;
       outline: none;
+      max-width: 220px;
     }
 
     /* Main Workspace */
@@ -139,7 +140,7 @@
       align-items: flex-start;
     }
 
-    /* In-Game Frame */
+    /* In-Game Frame (Expands Continuously) */
     .trp-frame {
       width: 555px;
       min-height: 680px;
@@ -158,7 +159,7 @@
       overflow-wrap: break-word;
       word-wrap: break-word;
       position: relative;
-      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+      transition: background-color 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
     }
 
     .trp-frame::after {
@@ -408,17 +409,34 @@
 </head>
 <body>
 
+  <!-- App Header -->
   <header class="trp-header">
     <div class="trp-title">
       ⚔ Total RP 3 Profile Studio
     </div>
     <div class="trp-nav-btns">
       <select id="bgThemePicker" class="trp-select" onchange="applyTRPBackground(this.value)">
+        <!-- Core Classics -->
         <option value="parchment">📜 Parchment (Default)</option>
-        <option value="dark">📜 Dark Parchment</option>
-        <option value="void">🌌 Void / Midnight</option>
-        <option value="stone">🛡 Iron / Slate</option>
-        <option value="horde">🩸 Crimson / Sin'dorei</option>
+        <option value="parchment_dark">📜 Dark Parchment</option>
+        <option value="aged_paper">📜 Aged / Weathered Paper</option>
+        
+        <!-- Factions & Alliances -->
+        <option value="alliance">🦁 Alliance (Lordaeron Marble)</option>
+        <option value="horde">🩸 Horde (Sin'dorei Crimson)</option>
+        <option value="ironforge">🛡 Ironforge / Slate Stone</option>
+        <option value="darnassus">🌙 Darnassus / Teldrassil</option>
+        <option value="gilneas">🎩 Gilnean Fog / Shadow</option>
+        <option value="bilgewater">⚙ Bilgewater Rust &amp; Oil</option>
+        <option value="forsaken">☠ Undercity / Rot Plague</option>
+        <option value="pandaren">🎋 Pandaren Bamboo Silk</option>
+
+        <!-- Cosmic & Magic -->
+        <option value="void">🌌 Void / Midnight Star</option>
+        <option value="arcane">🔮 Suramar / Ley Arcane</option>
+        <option value="fel">🔥 Fel / Burning Legion</option>
+        <option value="deathknight">❄ Ebon Hold / Frost Runes</option>
+        <option value="shaman">⚡ Elemental Earth &amp; Maelstrom</option>
       </select>
 
       <button type="button" class="trp-btn" onclick="openModal('bannerModal')">🖼 Banners &amp; Textures</button>
@@ -428,6 +446,7 @@
     </div>
   </header>
 
+  <!-- Work Area -->
   <main class="trp-workspace">
     <section class="trp-col">
       <div class="trp-col-header">
@@ -467,13 +486,10 @@
       </div>
       <p class="trp-modal-sub">Browse textures from your repository. Click any thumbnail to load its exact path and settings.</p>
 
-      <!-- Live Search Filter for Textures -->
       <input type="text" id="bannerFilterInput" placeholder="Filter textures by name (e.g. 6sm, suramar, sky, lightray, frame)..." oninput="onBannerFilter(this.value)">
 
-      <!-- Interactive Gallery Grid -->
       <div id="bannerBrowserGrid" class="trp-banner-browser" onscroll="handleBannerScroll(this)"></div>
 
-      <!-- Config & Sizing -->
       <div style="background:#13131c;border:1px solid #272738;border-radius:6px;padding:12px;margin-top:10px;">
         <label>Selected Texture Path:</label>
         <input type="text" id="imgPath" value="glues/models/ui_nightborneelf/6sm_lightray">
@@ -595,7 +611,6 @@
     let currentBannerRenderIndex = 0;
     const BANNER_PAGE_CHUNK = 30;
 
-    // Intelligent Environment Detector: Works 100% on live GitHub Pages
     function detectGitHubLocation() {
       const hostname = window.location.hostname;
       const pathname = window.location.pathname;
@@ -612,7 +627,6 @@
     async function fetchGitHubTextureTree() {
       const badge = document.getElementById('bannerCountBadge');
       
-      // Check cached tree first to prevent GitHub rate limits
       const cached = localStorage.getItem('trp_gh_textures');
       if (cached) {
         try {
@@ -628,13 +642,12 @@
 
       const location = detectGitHubLocation();
       if (!location || !location.username || !location.repo) {
-        badge.textContent = 'Active (Direct Path Mode)';
+        badge.textContent = 'Direct Path Mode Ready';
         return;
       }
 
       badge.textContent = 'Scanning GitHub repository...';
 
-      // Scan 'main' branch first, then 'master' as fallback
       const branches = ['main', 'master'];
       for (const branch of branches) {
         try {
@@ -904,7 +917,6 @@
         return `<img src="${src}" alt="${iconName}" class="trp-inline-icon" style="width:${iconSize}px; height:${iconSize}px;" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';" />`;
       });
 
-      // Cleanup dangling unclosed tags
       html = html.replace(/\{(?:h[1-3]|p|col|img|icon)[^}]*\}/gi, '');
       html = html.replace(/\{\/(?:h[1-3]|p|col)\}/gi, '');
 
@@ -917,41 +929,132 @@
       if (out) out.innerHTML = parseTRPToHTML(raw);
     }
 
+    // Extended TRP Background Preset Palette
     function applyTRPBackground(themeKey) {
       const frame = document.getElementById('trpOutput');
       if (!frame) return;
 
-      if (themeKey === 'dark') {
-        frame.style.backgroundColor = '#201812';
-        frame.style.backgroundImage = 'none';
-        frame.style.color = '#dfd3c3';
-        frame.style.borderColor = '#4a3b2c';
-        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(0,0,0,0.7)';
-      } else if (themeKey === 'void') {
-        frame.style.backgroundColor = '#0b0814';
-        frame.style.backgroundImage = 'none';
-        frame.style.color = '#d4c7ea';
-        frame.style.borderColor = '#362159';
-        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(93, 40, 150, 0.35)';
-      } else if (themeKey === 'stone') {
-        frame.style.backgroundColor = '#181b1e';
-        frame.style.backgroundImage = 'none';
-        frame.style.color = '#cfd8dc';
-        frame.style.borderColor = '#37474f';
-        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.8)';
-      } else if (themeKey === 'horde') {
-        frame.style.backgroundColor = '#1c0a0a';
-        frame.style.backgroundImage = 'none';
-        frame.style.color = '#edd6d6';
-        frame.style.borderColor = '#521414';
-        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(160, 20, 20, 0.4)';
-      } else {
-        frame.style.backgroundColor = '#f4e8cf';
-        frame.style.backgroundImage = 'radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.15) 0%, rgba(139, 90, 43, 0.12) 100%)';
-        frame.style.color = '#2b1d0c';
-        frame.style.borderColor = '#5a4123';
-        frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.6), inset 0 0 45px rgba(139, 90, 43, 0.25)';
-      }
+      const themes = {
+        parchment: {
+          bg: '#f4e8cf',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.15) 0%, rgba(139, 90, 43, 0.12) 100%)',
+          color: '#2b1d0c',
+          border: '#5a4123',
+          shadow: '0 6px 24px rgba(0,0,0,0.6), inset 0 0 45px rgba(139, 90, 43, 0.25)'
+        },
+        parchment_dark: {
+          bg: '#201812',
+          gradient: 'none',
+          color: '#dfd3c3',
+          border: '#4a3b2c',
+          shadow: '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(0,0,0,0.7)'
+        },
+        aged_paper: {
+          bg: '#d8c29d',
+          gradient: 'radial-gradient(circle at 50% 50%, rgba(230, 210, 175, 0.2) 0%, rgba(85, 55, 25, 0.25) 100%)',
+          color: '#241407',
+          border: '#4e3314',
+          shadow: '0 6px 24px rgba(0,0,0,0.65), inset 0 0 55px rgba(60, 35, 12, 0.45)'
+        },
+        alliance: {
+          bg: '#1c2430',
+          gradient: 'linear-gradient(180deg, rgba(28, 45, 68, 0.6) 0%, rgba(15, 20, 30, 0.9) 100%)',
+          color: '#e2ebf5',
+          border: '#3b587a',
+          shadow: '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(32, 60, 95, 0.45)'
+        },
+        horde: {
+          bg: '#1c0a0a',
+          gradient: 'radial-gradient(circle at 50% 15%, rgba(120, 20, 20, 0.25) 0%, rgba(20, 5, 5, 0.9) 100%)',
+          color: '#edd6d6',
+          border: '#521414',
+          shadow: '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(160, 20, 20, 0.4)'
+        },
+        ironforge: {
+          bg: '#181b1e',
+          gradient: 'linear-gradient(180deg, rgba(40, 45, 52, 0.4) 0%, rgba(18, 20, 24, 0.9) 100%)',
+          color: '#cfd8dc',
+          border: '#37474f',
+          shadow: '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.8)'
+        },
+        darnassus: {
+          bg: '#0f1a18',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(30, 65, 55, 0.35) 0%, rgba(10, 20, 18, 0.9) 100%)',
+          color: '#d2ede4',
+          border: '#1b4a3e',
+          shadow: '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(25, 80, 65, 0.3)'
+        },
+        gilneas: {
+          bg: '#121417',
+          gradient: 'linear-gradient(180deg, rgba(30, 35, 40, 0.5) 0%, rgba(10, 11, 13, 0.95) 100%)',
+          color: '#c2c9d1',
+          border: '#2c343d',
+          shadow: '0 6px 24px rgba(0,0,0,0.9), inset 0 0 60px rgba(15, 18, 22, 0.9)'
+        },
+        bilgewater: {
+          bg: '#1c1810',
+          gradient: 'radial-gradient(circle at 50% 30%, rgba(100, 75, 25, 0.25) 0%, rgba(20, 18, 12, 0.95) 100%)',
+          color: '#e4d9c3',
+          border: '#59441a',
+          shadow: '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(80, 55, 15, 0.4)'
+        },
+        forsaken: {
+          bg: '#141712',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(45, 60, 30, 0.35) 0%, rgba(12, 16, 10, 0.95) 100%)',
+          color: '#d8e5cb',
+          border: '#344524',
+          shadow: '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(50, 75, 30, 0.35)'
+        },
+        pandaren: {
+          bg: '#e8dec5',
+          gradient: 'radial-gradient(circle at 50% 30%, rgba(255, 250, 235, 0.25) 0%, rgba(140, 120, 85, 0.2) 100%)',
+          color: '#262016',
+          border: '#695738',
+          shadow: '0 6px 24px rgba(0,0,0,0.55), inset 0 0 45px rgba(120, 95, 55, 0.25)'
+        },
+        void: {
+          bg: '#0b0814',
+          gradient: 'none',
+          color: '#d4c7ea',
+          border: '#362159',
+          shadow: '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(93, 40, 150, 0.35)'
+        },
+        arcane: {
+          bg: '#110b1a',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(110, 50, 170, 0.3) 0%, rgba(15, 8, 25, 0.95) 100%)',
+          color: '#ebd6ff',
+          border: '#4a2574',
+          shadow: '0 6px 24px rgba(0,0,0,0.85), inset 0 0 50px rgba(120, 45, 180, 0.4)'
+        },
+        fel: {
+          bg: '#0c160c',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(45, 115, 20, 0.3) 0%, rgba(10, 18, 10, 0.95) 100%)',
+          color: '#dcffd2',
+          border: '#2c591b',
+          shadow: '0 6px 24px rgba(0,0,0,0.85), inset 0 0 50px rgba(55, 130, 25, 0.35)'
+        },
+        deathknight: {
+          bg: '#0c1117',
+          gradient: 'radial-gradient(circle at 50% 20%, rgba(25, 65, 95, 0.35) 0%, rgba(8, 12, 18, 0.95) 100%)',
+          color: '#d0e5f2',
+          border: '#214259',
+          shadow: '0 6px 24px rgba(0,0,0,0.9), inset 0 0 55px rgba(25, 80, 120, 0.35)'
+        },
+        shaman: {
+          bg: '#14101a',
+          gradient: 'radial-gradient(circle at 50% 25%, rgba(65, 45, 105, 0.3) 0%, rgba(15, 12, 22, 0.95) 100%)',
+          color: '#dfd8ec',
+          border: '#3c3057',
+          shadow: '0 6px 24px rgba(0,0,0,0.85), inset 0 0 50px rgba(85, 55, 135, 0.3)'
+        }
+      };
+
+      const sel = themes[themeKey] || themes.parchment;
+      frame.style.backgroundColor = sel.bg;
+      frame.style.backgroundImage = sel.gradient;
+      frame.style.color = sel.color;
+      frame.style.borderColor = sel.border;
+      frame.style.boxShadow = sel.shadow;
     }
 
     function copyTRPCode() {
