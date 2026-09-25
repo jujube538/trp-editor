@@ -110,7 +110,7 @@
     }
     #trpInput {
       flex: 1;
-      min-height: 650px;
+      min-height: 700px;
       background: #14141c;
       color: #f1f1f5;
       border: 1px solid #272736;
@@ -135,19 +135,21 @@
       display: flex;
       justify-content: center;
       overflow-y: auto;
-      max-height: 840px;
+      max-height: 860px;
     }
 
-    /* In-Game Frame */
+    /* In-Game Frame (Expands Continuously) */
     .trp-frame {
       width: 555px;
       min-height: 680px;
+      height: auto;
       background-color: #f4e8cf;
+      background-image: radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.15) 0%, rgba(139, 90, 43, 0.1) 100%);
       color: #2b1d0c;
       font-family: 'Merriweather', Georgia, serif;
       font-size: 13.5px;
       line-height: 1.6;
-      padding: 26px 22px;
+      padding: 26px 22px 60px 22px;
       box-shadow: 0 6px 24px rgba(0,0,0,0.6), inset 0 0 45px rgba(139, 90, 43, 0.25);
       border: 2px solid #5a4123;
       border-radius: 3px;
@@ -170,7 +172,7 @@
       font-size: 20px;
       font-weight: 700;
       color: #4a1c0d;
-      margin: 12px 0 8px 0;
+      margin: 14px 0 8px 0;
       border-bottom: 1px solid rgba(90, 65, 35, 0.25);
       padding-bottom: 4px;
     }
@@ -179,13 +181,13 @@
       font-size: 16px;
       font-weight: 700;
       color: #5c2712;
-      margin: 12px 0 6px 0;
+      margin: 14px 0 6px 0;
     }
     .trp-frame .trp-h3 {
       font-size: 14px;
       font-weight: 700;
       color: #3b2014;
-      margin: 8px 0 3px 0;
+      margin: 10px 0 4px 0;
     }
     .trp-frame .trp-p {
       margin-bottom: 10px;
@@ -389,7 +391,7 @@
 {h2:l}{col:ffffff}At First Glance{/col}{/h2}
 {p}{icon:inv_misc_book_09:18} {col:e8e8e8}A Quel'dorei arcanist garbed in star-spun silk robes. Delicate arcane chronometers tic silently upon her mantle.{/col}{/p}
 
-{h3}{col:ffffff}Chronicles &amp; Notes{/col}{/h3}
+{h3:l}{col:ffffff}Chronicles &amp; Notes{/col}{/h3}
 {p}{icon:spell_holy_magicalsentry:18} {col:e8e8e8}Scholar of the arcane arts and mistress of localized temporal dilation. Seek her counsel with due decorum.{/col}{/p}</textarea>
     </section>
 
@@ -750,26 +752,31 @@
 
       if (themeKey === 'dark') {
         frame.style.backgroundColor = '#201812';
+        frame.style.backgroundImage = 'none';
         frame.style.color = '#dfd3c3';
         frame.style.borderColor = '#4a3b2c';
         frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(0,0,0,0.7)';
       } else if (themeKey === 'void') {
         frame.style.backgroundColor = '#0b0814';
+        frame.style.backgroundImage = 'none';
         frame.style.color = '#d4c7ea';
         frame.style.borderColor = '#362159';
         frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(93, 40, 150, 0.35)';
       } else if (themeKey === 'stone') {
         frame.style.backgroundColor = '#181b1e';
+        frame.style.backgroundImage = 'none';
         frame.style.color = '#cfd8dc';
         frame.style.borderColor = '#37474f';
         frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.8)';
       } else if (themeKey === 'horde') {
         frame.style.backgroundColor = '#1c0a0a';
+        frame.style.backgroundImage = 'none';
         frame.style.color = '#edd6d6';
         frame.style.borderColor = '#521414';
         frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.7), inset 0 0 50px rgba(160, 20, 20, 0.4)';
       } else {
         frame.style.backgroundColor = '#f4e8cf';
+        frame.style.backgroundImage = 'radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.15) 0%, rgba(139, 90, 43, 0.1) 100%)';
         frame.style.color = '#2b1d0c';
         frame.style.borderColor = '#5a4123';
         frame.style.boxShadow = '0 6px 24px rgba(0,0,0,0.6), inset 0 0 45px rgba(139, 90, 43, 0.25)';
