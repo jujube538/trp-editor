@@ -135,13 +135,13 @@
     /* Main Workspace */
     .trp-workspace {
       display: grid;
-      grid-template-columns: 1fr 600px;
+      grid-template-columns: 1fr 620px;
       flex: 1;
       gap: 20px;
       padding: 16px 24px;
       background: #0f0f15;
     }
-    @media (max-width: 1120px) {
+    @media (max-width: 1180px) {
       .trp-workspace { grid-template-columns: 1fr; }
     }
 
@@ -159,6 +159,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     #trpInput {
       flex: 1;
@@ -178,6 +180,46 @@
       border-color: #7c3aed;
     }
 
+    /* Precision Width Controls */
+    .trp-width-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #181824;
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid #2d2d3e;
+    }
+    .trp-width-controls input[type="range"] {
+      width: 80px;
+      cursor: pointer;
+    }
+    .trp-width-num {
+      width: 54px;
+      background: #0e0e14;
+      border: 1px solid #3c3c52;
+      color: #d4af37;
+      font-family: 'Fira Code', monospace;
+      font-size: 11.5px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      text-align: center;
+      outline: none;
+    }
+    .trp-width-pill {
+      background: #252536;
+      border: 1px solid #3c3c50;
+      color: #cbd5e1;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .trp-width-pill:hover {
+      background: #36364e;
+      color: #fff;
+    }
+
     /* Canvas Viewport */
     .trp-viewport {
       background: #07070a;
@@ -191,7 +233,7 @@
       align-items: flex-start;
     }
 
-    /* In-Game Frame (Dynamic Width Controller) */
+    /* In-Game Frame */
     .trp-frame {
       width: 555px;
       min-height: 680px;
@@ -511,7 +553,7 @@
     /* Icon Grid Container */
     .trp-icon-browser {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
       gap: 6px;
       max-height: 280px;
       overflow-y: auto;
@@ -532,7 +574,7 @@
     }
     .trp-icon-item:hover {
       border-color: #d4af37;
-      transform: scale(1.12);
+      transform: scale(1.15);
       z-index: 10;
     }
     .trp-icon-item img {
@@ -653,10 +695,15 @@
     <section class="trp-col">
       <div class="trp-col-header">
         <span>In-Game Canvas Preview</span>
-        <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
-          <span>Width:</span>
-          <input type="range" id="frameWidthSlider" min="400" max="800" value="555" oninput="changeFrameWidth(this.value)" style="width:100px;cursor:pointer;">
-          <span id="frameWidthVal" style="font-family:'Fira Code',monospace;color:#d4af37;min-width:38px;">555px</span>
+        <!-- Precise Width Controls -->
+        <div class="trp-width-controls">
+          <span style="font-size:10.5px;color:#999;">Width:</span>
+          <input type="range" id="frameWidthSlider" min="400" max="850" step="1" value="555" oninput="syncFrameWidth(this.value)">
+          <input type="number" id="frameWidthNum" min="300" max="1200" step="1" value="555" class="trp-width-num" oninput="syncFrameWidth(this.value)">
+          <span style="font-size:10px;color:#999;">px</span>
+          <button type="button" class="trp-width-pill" onclick="syncFrameWidth(555)" title="Standard Total RP 3 Default">555</button>
+          <button type="button" class="trp-width-pill" onclick="syncFrameWidth(600)">600</button>
+          <button type="button" class="trp-width-pill" onclick="syncFrameWidth(700)">700</button>
         </div>
       </div>
       <div class="trp-viewport">
@@ -836,17 +883,17 @@
     </div>
   </div>
 
-  <!-- Interactive Icon Directory Modal (30,000+ Exported Icons Support) -->
+  <!-- Interactive Icon Directory Modal (Loaded from icons.json) -->
   <div id="iconModal" class="trp-modal">
     <div class="trp-modal-content" style="max-width:680px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <h3>Complete WoW Icon Directory</h3>
-        <span id="iconCountBadge" style="font-size:11px;color:#d4af37;background:#252534;padding:3px 8px;border-radius:4px;">Scanning GitHub repo...</span>
+        <span id="iconCountBadge" style="font-size:11px;color:#d4af37;background:#252534;padding:3px 8px;border-radius:4px;">Loading icons.json...</span>
       </div>
-      <p class="trp-modal-sub">Browse all exported icons from your repository. Click any icon to insert its tag.</p>
+      <p class="trp-modal-sub">Browse all exported icons from your <code>interface/icons/</code> library. Click any icon to insert.</p>
 
       <div style="display:flex;gap:8px;margin-bottom:8px;">
-        <input type="text" id="iconSearchInput" placeholder="Search 30,000+ icons by name (e.g. inv_sword_04, spell_arcane, book)..." oninput="onIconSearch(this.value)">
+        <input type="text" id="iconSearchInput" placeholder="Search 30,000+ icons by name (e.g. inv_sword, spell_arcane, book, potion)..." oninput="onIconSearch(this.value)">
         <input type="number" id="iconInsertSize" value="18" style="width:75px;" title="Insert Size (px)">
       </div>
 
@@ -908,13 +955,20 @@
     let currentIconRenderIndex = 0;
     const PAGE_CHUNK = 60;
 
-    function changeFrameWidth(val) {
+    // Precise Frame Width Synchronizer
+    function syncFrameWidth(val) {
+      let num = parseInt(val, 10);
+      if (isNaN(num)) return;
+      if (num < 300) num = 300;
+      if (num > 1200) num = 1200;
+
       const frame = document.getElementById('trpOutput');
-      const valLabel = document.getElementById('frameWidthVal');
-      if (frame && valLabel) {
-        frame.style.width = val + 'px';
-        valLabel.textContent = val + 'px';
-      }
+      const slider = document.getElementById('frameWidthSlider');
+      const numInput = document.getElementById('frameWidthNum');
+
+      if (frame) frame.style.width = num + 'px';
+      if (slider) slider.value = num;
+      if (numInput && numInput.value != num) numInput.value = num;
     }
 
     // Direct and Modal Color Handling
@@ -1076,38 +1130,27 @@
 
     async function fetchGitHubTextureTree() {
       const badge = document.getElementById('bannerCountBadge');
-      const iconBadge = document.getElementById('iconCountBadge');
       
       const cached = localStorage.getItem('trp_gh_textures');
-      const iconCached = localStorage.getItem('trp_gh_icons');
-
-      if (cached && iconCached) {
+      if (cached) {
         try {
           MASTER_BANNER_LIST = JSON.parse(cached);
-          MASTER_ICON_LIST = JSON.parse(iconCached);
-          FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
-          FILTERED_ICON_LIST = MASTER_ICON_LIST;
-          badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Ready`;
-          iconBadge.textContent = `${MASTER_ICON_LIST.length.toLocaleString()} Icons Ready`;
-          renderNextBannerBatch(true);
-          renderNextIconBatch(true);
-          return;
-        } catch (e) {
-          localStorage.removeItem('trp_gh_textures');
-          localStorage.removeItem('trp_gh_icons');
-        }
+          if (MASTER_BANNER_LIST.length > 0) {
+            FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
+            badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Ready`;
+            renderNextBannerBatch(true);
+            return;
+          }
+        } catch (e) { localStorage.removeItem('trp_gh_textures'); }
       }
 
       const location = detectGitHubLocation();
       if (!location || !location.username || !location.repo) {
         badge.textContent = 'Direct Path Mode Ready';
-        iconBadge.textContent = 'Direct Path Mode Ready';
-        loadFallbackIcons();
         return;
       }
 
       badge.textContent = 'Scanning GitHub repository...';
-      iconBadge.textContent = 'Scanning GitHub repository...';
 
       const branches = ['main', 'master'];
       for (const branch of branches) {
@@ -1121,21 +1164,11 @@
                 .filter(item => item.path.toLowerCase().startsWith('interface/') && item.path.toLowerCase().endsWith('.png') && !item.path.toLowerCase().includes('/icons/'))
                 .map(item => item.path);
 
-              MASTER_ICON_LIST = data.tree
-                .filter(item => item.path.toLowerCase().startsWith('interface/') && item.path.toLowerCase().endsWith('.png') && item.path.toLowerCase().includes('/icons/'))
-                .map(item => item.path);
-
-              if (MASTER_BANNER_LIST.length > 0 || MASTER_ICON_LIST.length > 0) {
+              if (MASTER_BANNER_LIST.length > 0) {
                 localStorage.setItem('trp_gh_textures', JSON.stringify(MASTER_BANNER_LIST));
-                localStorage.setItem('trp_gh_icons', JSON.stringify(MASTER_ICON_LIST));
-                
                 FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
-                FILTERED_ICON_LIST = MASTER_ICON_LIST.length > 0 ? MASTER_ICON_LIST : getStarterIconsList();
-                
                 badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Found`;
-                iconBadge.textContent = `${MASTER_ICON_LIST.length.toLocaleString()} Icons Found`;
                 renderNextBannerBatch(true);
-                renderNextIconBatch(true);
                 return;
               }
             }
@@ -1144,24 +1177,51 @@
       }
 
       badge.textContent = 'Direct Path Mode Ready';
-      iconBadge.textContent = 'Online Catalog Ready';
-      loadFallbackIcons();
     }
 
-    function loadFallbackIcons() {
-      MASTER_ICON_LIST = getStarterIconsList();
-      FILTERED_ICON_LIST = MASTER_ICON_LIST;
-      renderNextIconBatch(true);
-      document.getElementById('iconCountBadge').textContent = 'Catalog Ready';
-    }
+    async function fetchFullIconManifest() {
+      const iconBadge = document.getElementById('iconCountBadge');
+      iconBadge.textContent = 'Loading icon catalog...';
 
-    function getStarterIconsList() {
-      return [
-        'interface/icons/inv_misc_book_09.png', 'interface/icons/inv_scroll_03.png', 'interface/icons/spell_holy_magicalsentry.png',
-        'interface/icons/spell_arcane_portalshattrath.png', 'interface/icons/spell_arcane_arcane04.png', 'interface/icons/inv_staff_30.png',
-        'interface/icons/inv_sword_04.png', 'interface/icons/inv_shield_06.png', 'interface/icons/inv_helmet_03.png',
-        'interface/icons/inv_jewelry_ring_03.png', 'interface/icons/inv_potion_51.png', 'interface/icons/spell_fire_flamebolt.png'
+      // 1. Load your local interface/icons.json manifest generated from PowerShell
+      try {
+        const localRes = await fetch('./interface/icons.json');
+        if (localRes.ok) {
+          const list = await localRes.json();
+          if (Array.isArray(list) && list.length > 0) {
+            MASTER_ICON_LIST = list;
+            FILTERED_ICON_LIST = MASTER_ICON_LIST;
+            iconBadge.textContent = `${MASTER_ICON_LIST.length.toLocaleString()} Icons Ready`;
+            renderNextIconBatch(true);
+            return;
+          }
+        }
+      } catch (err) {}
+
+      // 2. Fallback: Public Retail WoW Icons Catalog
+      try {
+        const remoteRes = await fetch('https://raw.githubusercontent.com/Marfjeh/wow-icon-list/master/icons.json');
+        if (remoteRes.ok) {
+          const remoteList = await remoteRes.json();
+          if (Array.isArray(remoteList) && remoteList.length > 0) {
+            MASTER_ICON_LIST = remoteList;
+            FILTERED_ICON_LIST = MASTER_ICON_LIST;
+            iconBadge.textContent = `${MASTER_ICON_LIST.length.toLocaleString()} Retail Icons Ready`;
+            renderNextIconBatch(true);
+            return;
+          }
+        }
+      } catch (err) {}
+
+      // 3. Fallback to Starter Core Icons
+      MASTER_ICON_LIST = [
+        'inv_misc_book_09', 'inv_scroll_03', 'spell_holy_magicalsentry', 'spell_arcane_portalshattrath',
+        'spell_arcane_arcane04', 'inv_staff_30', 'inv_sword_04', 'inv_shield_06', 'inv_helmet_03',
+        'inv_jewelry_ring_03', 'inv_potion_51', 'spell_fire_flamebolt'
       ];
+      FILTERED_ICON_LIST = MASTER_ICON_LIST;
+      iconBadge.textContent = `${MASTER_ICON_LIST.length} Core Icons Ready`;
+      renderNextIconBatch(true);
     }
 
     function renderNextBannerBatch(reset = false) {
@@ -1171,7 +1231,7 @@
         currentBannerRenderIndex = 0;
       }
 
-      const nextBatch = FILTERED_BANNER_LIST.slice(currentBannerRenderIndex, currentBannerRenderIndex + BANNER_PAGE_CHUNK);
+      const nextBatch = FILTERED_BANNER_LIST.slice(currentBannerRenderIndex, currentBannerRenderIndex + PAGE_CHUNK);
       nextBatch.forEach(filePath => {
         let inGamePath = filePath.replace(/\.(png|jpg|blp)$/i, '');
         if (!inGamePath.toLowerCase().startsWith('interface/')) {
@@ -1211,8 +1271,8 @@
       }
 
       const nextBatch = FILTERED_ICON_LIST.slice(currentIconRenderIndex, currentIconRenderIndex + PAGE_CHUNK);
-      nextBatch.forEach(filePath => {
-        const cleanName = filePath.split('/').pop().replace(/\.(png|jpg|blp)$/i, '').toLowerCase();
+      nextBatch.forEach(name => {
+        const cleanName = name.replace(/\.(png|jpg|blp)$/i, '').toLowerCase();
 
         const card = document.createElement('div');
         card.className = 'trp-icon-item';
@@ -1223,11 +1283,12 @@
         };
 
         const img = document.createElement('img');
-        img.src = `./${filePath}`;
+        // Point to your local interface/icons/ folder
+        img.src = `./interface/icons/${cleanName}.png`;
         img.loading = 'lazy';
         img.alt = cleanName;
         img.onerror = function() {
-          // Fallback to Zamimg CDN if local file fails
+          this.onerror = null;
           this.src = `https://wow.zamimg.com/images/wow/icons/large/${cleanName}.jpg`;
         };
 
@@ -1274,7 +1335,7 @@
       if (!q) {
         FILTERED_ICON_LIST = MASTER_ICON_LIST;
       } else {
-        FILTERED_ICON_LIST = MASTER_ICON_LIST.filter(path => path.toLowerCase().includes(q));
+        FILTERED_ICON_LIST = MASTER_ICON_LIST.filter(name => name.toLowerCase().includes(q));
       }
       renderNextIconBatch(true);
     }
@@ -1326,12 +1387,6 @@
 
       insertSnippet(`\n{img:${path}:${w}:${h}${pos}}\n`);
       closeModal('bannerModal');
-    }
-
-    function insertIconTag(name) {
-      const size = document.getElementById('iconInsertSize').value || 18;
-      insertSnippet(`{icon:${name}:${size}}`);
-      closeModal('iconModal');
     }
 
     // Parser Engine
@@ -1535,8 +1590,11 @@
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
-      if ((id === 'bannerModal' || id === 'iconModal') && MASTER_BANNER_LIST.length === 0) {
+      if (id === 'bannerModal' && MASTER_BANNER_LIST.length === 0) {
         fetchGitHubTextureTree();
+      }
+      if (id === 'iconModal' && MASTER_ICON_LIST.length === 0) {
+        fetchFullIconManifest();
       }
     }
     function closeModal(id) {
@@ -1582,6 +1640,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       renderTRP();
       fetchGitHubTextureTree();
+      fetchFullIconManifest();
     });
   </script>
 </body>
