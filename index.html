@@ -158,6 +158,7 @@
       letter-spacing: 0.5px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
     #trpInput {
       flex: 1;
@@ -190,7 +191,7 @@
       align-items: flex-start;
     }
 
-    /* In-Game Frame */
+    /* In-Game Frame (Dynamic Width Controller) */
     .trp-frame {
       width: 555px;
       min-height: 680px;
@@ -464,7 +465,7 @@
       border-color: #b88628;
     }
 
-    /* Interactive Banner Grid */
+    /* Interactive Banner & Icon Browser Grid */
     .trp-banner-browser {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -507,31 +508,48 @@
       white-space: nowrap;
     }
 
-    /* Icon Grid */
+    /* Icon Grid Container */
     .trp-icon-browser {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
       gap: 6px;
-      max-height: 320px;
+      max-height: 280px;
       overflow-y: auto;
       padding: 10px;
       background: #101017;
       border: 1px solid #262636;
       border-radius: 5px;
+      margin-top: 6px;
     }
-    .trp-icon-browser img {
+    .trp-icon-item {
+      background: #181822;
+      border: 1px solid #2e2e42;
+      border-radius: 4px;
+      padding: 3px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .trp-icon-item:hover {
+      border-color: #d4af37;
+      transform: scale(1.12);
+      z-index: 10;
+    }
+    .trp-icon-item img {
       width: 100%;
       aspect-ratio: 1/1;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid #2d2d3d;
-      transition: transform 0.1s, border-color 0.1s;
+      border-radius: 2px;
+      object-fit: cover;
       background: #08080c;
     }
-    .trp-icon-browser img:hover {
-      transform: scale(1.18);
-      border-color: #d4af37;
-      z-index: 10;
+    .trp-icon-item span {
+      display: block;
+      font-size: 9px;
+      color: #999;
+      margin-top: 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .trp-symbol-row span {
@@ -635,7 +653,11 @@
     <section class="trp-col">
       <div class="trp-col-header">
         <span>In-Game Canvas Preview</span>
-        <span>555px Frame</span>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+          <span>Width:</span>
+          <input type="range" id="frameWidthSlider" min="400" max="800" value="555" oninput="changeFrameWidth(this.value)" style="width:100px;cursor:pointer;">
+          <span id="frameWidthVal" style="font-family:'Fira Code',monospace;color:#d4af37;min-width:38px;">555px</span>
+        </div>
       </div>
       <div class="trp-viewport">
         <div id="trpOutput" class="trp-frame"></div>
@@ -814,6 +836,42 @@
     </div>
   </div>
 
+  <!-- Interactive Icon Directory Modal (30,000+ Exported Icons Support) -->
+  <div id="iconModal" class="trp-modal">
+    <div class="trp-modal-content" style="max-width:680px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>Complete WoW Icon Directory</h3>
+        <span id="iconCountBadge" style="font-size:11px;color:#d4af37;background:#252534;padding:3px 8px;border-radius:4px;">Scanning GitHub repo...</span>
+      </div>
+      <p class="trp-modal-sub">Browse all exported icons from your repository. Click any icon to insert its tag.</p>
+
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input type="text" id="iconSearchInput" placeholder="Search 30,000+ icons by name (e.g. inv_sword_04, spell_arcane, book)..." oninput="onIconSearch(this.value)">
+        <input type="number" id="iconInsertSize" value="18" style="width:75px;" title="Insert Size (px)">
+      </div>
+
+      <div id="iconBrowserGrid" class="trp-icon-browser" onscroll="handleIconScroll(this)"></div>
+
+      <label style="margin-top:12px;">Safe RP Anchored Glyphs:</label>
+      <div class="trp-symbol-row">
+        <span onclick="insertSnippet(' 一 ◈ ')">◈</span>
+        <span onclick="insertSnippet(' 一 ❖ ')">❖</span>
+        <span onclick="insertSnippet(' 一 ✦ ')">✦</span>
+        <span onclick="insertSnippet(' 一 ✧ ')">✧</span>
+        <span onclick="insertSnippet(' 一 ⚔ ')">⚔</span>
+        <span onclick="insertSnippet(' 一 ⚖ ')">⚖</span>
+        <span onclick="insertSnippet(' 一 ⚜ ')">⚜</span>
+        <span onclick="insertSnippet(' ═ ')">═</span>
+        <span onclick="insertSnippet(' ─ ')">─</span>
+        <span onclick="insertSnippet(' ✦ ━━━━━━━━━━━━ ✦ ')">Divider Bar</span>
+      </div>
+
+      <div class="trp-modal-actions">
+        <button type="button" class="trp-btn" onclick="closeModal('iconModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Gradient Modal -->
   <div id="gradModal" class="trp-modal">
     <div class="trp-modal-content">
@@ -840,58 +898,24 @@
     </div>
   </div>
 
-  <!-- Full Icon Directory Modal -->
-  <div id="iconModal" class="trp-modal">
-    <div class="trp-modal-content">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <h3>Complete WoW Icon Directory</h3>
-        <span id="iconCountBadge" style="font-size:11px;color:#d4af37;background:#252534;padding:3px 8px;border-radius:4px;">Loading catalog...</span>
-      </div>
-      <p class="trp-modal-sub">Search through all retail game icons. Type any keyword to filter immediately.</p>
-
-      <div style="display:flex;gap:8px;margin-bottom:8px;">
-        <input type="text" id="iconSearchInput" placeholder="Search 30,000+ icons by name (e.g. fire, sword, chronomancy, book, portal, potion, gold, helm)..." oninput="onIconSearch(this.value)">
-        <input type="number" id="iconInsertSize" value="18" style="width:75px;" title="Insert Size (px)">
-      </div>
-
-      <div class="trp-tabs">
-        <button type="button" class="trp-tab-btn active" onclick="quickFilterIcon('', this)">All Icons</button>
-        <button type="button" class="trp-tab-btn" onclick="quickFilterIcon('arcane', this)">Arcane &amp; Spells</button>
-        <button type="button" class="trp-tab-btn" onclick="quickFilterIcon('sword', this)">Swords &amp; Blades</button>
-        <button type="button" class="trp-tab-btn" onclick="quickFilterIcon('shield', this)">Shields &amp; Armor</button>
-        <button type="button" class="trp-tab-btn" onclick="quickFilterIcon('gem', this)">Gems &amp; Jewelry</button>
-        <button type="button" class="trp-tab-btn" onclick="quickFilterIcon('potion', this)">Potions &amp; Alchemy</button>
-        <button type="button" class="trp-tab-btn" onclick="quickFilterIcon('scroll', this)">Books &amp; Scrolls</button>
-        <button type="button" class="trp-tab-btn" onclick="quickFilterIcon('fire', this)">Elements</button>
-      </div>
-
-      <div id="iconGridContainer" class="trp-icon-browser" onscroll="handleIconScroll(this)"></div>
-
-      <label style="margin-top:12px;">Safe RP Anchored Glyphs:</label>
-      <div class="trp-symbol-row">
-        <span onclick="insertSnippet(' 一 ◈ ')">◈</span>
-        <span onclick="insertSnippet(' 一 ❖ ')">❖</span>
-        <span onclick="insertSnippet(' 一 ✦ ')">✦</span>
-        <span onclick="insertSnippet(' 一 ✧ ')">✧</span>
-        <span onclick="insertSnippet(' 一 ⚔ ')">⚔</span>
-        <span onclick="insertSnippet(' 一 ⚖ ')">⚖</span>
-        <span onclick="insertSnippet(' 一 ⚜ ')">⚜</span>
-        <span onclick="insertSnippet(' ═ ')">═</span>
-        <span onclick="insertSnippet(' ─ ')">─</span>
-        <span onclick="insertSnippet(' ✦ ━━━━━━━━━━━━ ✦ ')">Divider Bar</span>
-      </div>
-
-      <div class="trp-modal-actions">
-        <button type="button" class="trp-btn" onclick="closeModal('iconModal')">Close</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     let MASTER_BANNER_LIST = [];
     let FILTERED_BANNER_LIST = [];
     let currentBannerRenderIndex = 0;
-    const BANNER_PAGE_CHUNK = 30;
+
+    let MASTER_ICON_LIST = [];
+    let FILTERED_ICON_LIST = [];
+    let currentIconRenderIndex = 0;
+    const PAGE_CHUNK = 60;
+
+    function changeFrameWidth(val) {
+      const frame = document.getElementById('trpOutput');
+      const valLabel = document.getElementById('frameWidthVal');
+      if (frame && valLabel) {
+        frame.style.width = val + 'px';
+        valLabel.textContent = val + 'px';
+      }
+    }
 
     // Direct and Modal Color Handling
     function updateColorHexField(hexVal) {
@@ -1052,27 +1076,38 @@
 
     async function fetchGitHubTextureTree() {
       const badge = document.getElementById('bannerCountBadge');
+      const iconBadge = document.getElementById('iconCountBadge');
       
       const cached = localStorage.getItem('trp_gh_textures');
-      if (cached) {
+      const iconCached = localStorage.getItem('trp_gh_icons');
+
+      if (cached && iconCached) {
         try {
           MASTER_BANNER_LIST = JSON.parse(cached);
-          if (MASTER_BANNER_LIST.length > 0) {
-            FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
-            badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Ready`;
-            renderNextBannerBatch(true);
-            return;
-          }
-        } catch (e) { localStorage.removeItem('trp_gh_textures'); }
+          MASTER_ICON_LIST = JSON.parse(iconCached);
+          FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
+          FILTERED_ICON_LIST = MASTER_ICON_LIST;
+          badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Ready`;
+          iconBadge.textContent = `${MASTER_ICON_LIST.length.toLocaleString()} Icons Ready`;
+          renderNextBannerBatch(true);
+          renderNextIconBatch(true);
+          return;
+        } catch (e) {
+          localStorage.removeItem('trp_gh_textures');
+          localStorage.removeItem('trp_gh_icons');
+        }
       }
 
       const location = detectGitHubLocation();
       if (!location || !location.username || !location.repo) {
         badge.textContent = 'Direct Path Mode Ready';
+        iconBadge.textContent = 'Direct Path Mode Ready';
+        loadFallbackIcons();
         return;
       }
 
       badge.textContent = 'Scanning GitHub repository...';
+      iconBadge.textContent = 'Scanning GitHub repository...';
 
       const branches = ['main', 'master'];
       for (const branch of branches) {
@@ -1083,14 +1118,24 @@
             const data = await res.json();
             if (data.tree && Array.isArray(data.tree)) {
               MASTER_BANNER_LIST = data.tree
-                .filter(item => item.path.toLowerCase().startsWith('interface/') && item.path.toLowerCase().endsWith('.png'))
+                .filter(item => item.path.toLowerCase().startsWith('interface/') && item.path.toLowerCase().endsWith('.png') && !item.path.toLowerCase().includes('/icons/'))
                 .map(item => item.path);
 
-              if (MASTER_BANNER_LIST.length > 0) {
+              MASTER_ICON_LIST = data.tree
+                .filter(item => item.path.toLowerCase().startsWith('interface/') && item.path.toLowerCase().endsWith('.png') && item.path.toLowerCase().includes('/icons/'))
+                .map(item => item.path);
+
+              if (MASTER_BANNER_LIST.length > 0 || MASTER_ICON_LIST.length > 0) {
                 localStorage.setItem('trp_gh_textures', JSON.stringify(MASTER_BANNER_LIST));
+                localStorage.setItem('trp_gh_icons', JSON.stringify(MASTER_ICON_LIST));
+                
                 FILTERED_BANNER_LIST = MASTER_BANNER_LIST;
+                FILTERED_ICON_LIST = MASTER_ICON_LIST.length > 0 ? MASTER_ICON_LIST : getStarterIconsList();
+                
                 badge.textContent = `${MASTER_BANNER_LIST.length.toLocaleString()} Textures Found`;
+                iconBadge.textContent = `${MASTER_ICON_LIST.length.toLocaleString()} Icons Found`;
                 renderNextBannerBatch(true);
+                renderNextIconBatch(true);
                 return;
               }
             }
@@ -1099,6 +1144,24 @@
       }
 
       badge.textContent = 'Direct Path Mode Ready';
+      iconBadge.textContent = 'Online Catalog Ready';
+      loadFallbackIcons();
+    }
+
+    function loadFallbackIcons() {
+      MASTER_ICON_LIST = getStarterIconsList();
+      FILTERED_ICON_LIST = MASTER_ICON_LIST;
+      renderNextIconBatch(true);
+      document.getElementById('iconCountBadge').textContent = 'Catalog Ready';
+    }
+
+    function getStarterIconsList() {
+      return [
+        'interface/icons/inv_misc_book_09.png', 'interface/icons/inv_scroll_03.png', 'interface/icons/spell_holy_magicalsentry.png',
+        'interface/icons/spell_arcane_portalshattrath.png', 'interface/icons/spell_arcane_arcane04.png', 'interface/icons/inv_staff_30.png',
+        'interface/icons/inv_sword_04.png', 'interface/icons/inv_shield_06.png', 'interface/icons/inv_helmet_03.png',
+        'interface/icons/inv_jewelry_ring_03.png', 'interface/icons/inv_potion_51.png', 'interface/icons/spell_fire_flamebolt.png'
+      ];
     }
 
     function renderNextBannerBatch(reset = false) {
@@ -1110,7 +1173,6 @@
 
       const nextBatch = FILTERED_BANNER_LIST.slice(currentBannerRenderIndex, currentBannerRenderIndex + BANNER_PAGE_CHUNK);
       nextBatch.forEach(filePath => {
-        // Enforce in-game TRP path starting with interface/
         let inGamePath = filePath.replace(/\.(png|jpg|blp)$/i, '');
         if (!inGamePath.toLowerCase().startsWith('interface/')) {
           inGamePath = 'interface/' + inGamePath;
@@ -1141,10 +1203,58 @@
       currentBannerRenderIndex += nextBatch.length;
     }
 
+    function renderNextIconBatch(reset = false) {
+      const container = document.getElementById('iconBrowserGrid');
+      if (reset) {
+        container.innerHTML = '';
+        currentIconRenderIndex = 0;
+      }
+
+      const nextBatch = FILTERED_ICON_LIST.slice(currentIconRenderIndex, currentIconRenderIndex + PAGE_CHUNK);
+      nextBatch.forEach(filePath => {
+        const cleanName = filePath.split('/').pop().replace(/\.(png|jpg|blp)$/i, '').toLowerCase();
+
+        const card = document.createElement('div');
+        card.className = 'trp-icon-item';
+        card.onclick = () => {
+          const size = document.getElementById('iconInsertSize').value || 18;
+          insertSnippet(`{icon:${cleanName}:${size}}`);
+          closeModal('iconModal');
+        };
+
+        const img = document.createElement('img');
+        img.src = `./${filePath}`;
+        img.loading = 'lazy';
+        img.alt = cleanName;
+        img.onerror = function() {
+          // Fallback to Zamimg CDN if local file fails
+          this.src = `https://wow.zamimg.com/images/wow/icons/large/${cleanName}.jpg`;
+        };
+
+        const label = document.createElement('span');
+        label.textContent = cleanName;
+        label.title = cleanName;
+
+        card.appendChild(img);
+        card.appendChild(label);
+        container.appendChild(card);
+      });
+
+      currentIconRenderIndex += nextBatch.length;
+    }
+
     function handleBannerScroll(el) {
       if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
         if (currentBannerRenderIndex < FILTERED_BANNER_LIST.length) {
           renderNextBannerBatch(false);
+        }
+      }
+    }
+
+    function handleIconScroll(el) {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+        if (currentIconRenderIndex < FILTERED_ICON_LIST.length) {
+          renderNextIconBatch(false);
         }
       }
     }
@@ -1159,7 +1269,17 @@
       renderNextBannerBatch(true);
     }
 
-    // Universal WoW Asset Resolver (Accepts in-game interface/... paths cleanly)
+    function onIconSearch(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        FILTERED_ICON_LIST = MASTER_ICON_LIST;
+      } else {
+        FILTERED_ICON_LIST = MASTER_ICON_LIST.filter(path => path.toLowerCase().includes(q));
+      }
+      renderNextIconBatch(true);
+    }
+
+    // Universal WoW Asset Resolver
     function resolveWoWTextureUrl(rawInput) {
       if (!rawInput) return '';
       const input = rawInput.trim();
@@ -1172,7 +1292,6 @@
         return `https://wago.tools/textures/${input}/render`;
       }
 
-      // Normalize: Strip leading interface/ and file extensions to locate ./interface/...
       let clean = input
         .replace(/\\/g, '/')
         .replace(/\.(blp|png|jpg)$/i, '')
@@ -1201,103 +1320,12 @@
       const h = document.getElementById('imgH').value.trim();
       const pos = document.getElementById('imgPos').value;
 
-      // Ensure path always includes interface/ for in-game TRP compatibility
       if (!path.startsWith('http') && !/^\d+$/.test(path) && !path.toLowerCase().startsWith('interface/')) {
         path = 'interface/' + path;
       }
 
       insertSnippet(`\n{img:${path}:${w}:${h}${pos}}\n`);
       closeModal('bannerModal');
-    }
-
-    // Master WoW Icon Directory Engine
-    let MASTER_ICON_LIST = [];
-    let FILTERED_ICON_LIST = [];
-    let currentRenderIndex = 0;
-    const PAGE_CHUNK = 60;
-
-    const STARTER_ICONS = [
-      'inv_misc_book_09', 'inv_scroll_03', 'spell_holy_magicalsentry', 'spell_arcane_portalshattrath',
-      'spell_arcane_arcane04', 'spell_holy_blessingofagility', 'spell_holy_magicalprotection', 'spell_shadow_shadowwordpain',
-      'spell_shadow_twilight', 'inv_staff_30', 'inv_wand_02', 'inv_relics_hourglass', 'inv_sword_04',
-      'inv_sword_27', 'inv_shield_06', 'inv_shield_05', 'inv_weapon_bow_08', 'inv_weapon_crossbow_01',
-      'inv_weapon_shortblade_05', 'inv_axe_02', 'inv_mace_02', 'inv_bannerpvp_02', 'inv_misc_horn_01',
-      'inv_helmet_03', 'inv_helmet_46', 'inv_crown_01', 'inv_chest_cloth_17', 'inv_chest_chain_05',
-      'inv_chest_plate01', 'inv_boots_cloth_01', 'inv_gauntlets_04', 'inv_jewelry_ring_03', 'inv_jewelry_necklace_07',
-      'inv_jewelry_talisman_07', 'inv_misc_pocketwatch_01', 'inv_potion_51', 'inv_potion_52', 'inv_misc_gem_sapphire_02',
-      'inv_misc_gem_ruby_01', 'inv_misc_gem_emerald_02', 'inv_misc_gem_diamond_02', 'inv_misc_key_03',
-      'inv_letter_15', 'inv_misc_coin_02', 'inv_drink_05', 'spell_fire_flamebolt', 'spell_fire_masterofelements',
-      'spell_frost_frostbolt02', 'spell_nature_healingtouch', 'spell_nature_rejuvenation', 'spell_nature_lightning',
-      'inv_misc_herb_01', 'trade_alchemy', 'trade_blacksmithing', 'trade_engineering', 'trade_tailoring'
-    ];
-
-    async function fetchFullIconManifest() {
-      MASTER_ICON_LIST = STARTER_ICONS;
-      FILTERED_ICON_LIST = MASTER_ICON_LIST;
-      renderNextIconBatch(true);
-
-      try {
-        const response = await fetch('https://raw.githubusercontent.com/Marfjeh/wow-icon-list/master/icons.json');
-        if (response.ok) {
-          const remoteIcons = await response.json();
-          if (Array.isArray(remoteIcons) && remoteIcons.length > 0) {
-            MASTER_ICON_LIST = remoteIcons;
-            FILTERED_ICON_LIST = remoteIcons;
-            document.getElementById('iconCountBadge').textContent = `${MASTER_ICON_LIST.length.toLocaleString()} Icons Ready`;
-            renderNextIconBatch(true);
-          }
-        }
-      } catch (err) {
-        document.getElementById('iconCountBadge').textContent = 'Core RP Catalog Ready';
-      }
-    }
-
-    function renderNextIconBatch(reset = false) {
-      const container = document.getElementById('iconGridContainer');
-      if (reset) {
-        container.innerHTML = '';
-        currentRenderIndex = 0;
-      }
-
-      const nextBatch = FILTERED_ICON_LIST.slice(currentRenderIndex, currentRenderIndex + PAGE_CHUNK);
-      nextBatch.forEach(name => {
-        const img = document.createElement('img');
-        const clean = name.toLowerCase().replace(/\.(blp|png|jpg)$/i, '');
-        img.src = `https://wow.zamimg.com/images/wow/icons/large/${clean}.jpg`;
-        img.title = clean;
-        img.alt = clean;
-        img.loading = 'lazy';
-        img.onclick = () => insertIconTag(clean);
-        img.onerror = function() { this.style.display = 'none'; };
-        container.appendChild(img);
-      });
-
-      currentRenderIndex += nextBatch.length;
-    }
-
-    function handleIconScroll(el) {
-      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 60) {
-        if (currentRenderIndex < FILTERED_ICON_LIST.length) {
-          renderNextIconBatch(false);
-        }
-      }
-    }
-
-    function onIconSearch(query) {
-      const cleanQ = query.trim().toLowerCase();
-      if (!cleanQ) {
-        FILTERED_ICON_LIST = MASTER_ICON_LIST;
-      } else {
-        FILTERED_ICON_LIST = MASTER_ICON_LIST.filter(name => name.toLowerCase().includes(cleanQ));
-      }
-      renderNextIconBatch(true);
-    }
-
-    function quickFilterIcon(keyword, btnEl) {
-      document.querySelectorAll('#iconModal .trp-tab-btn').forEach(b => b.classList.remove('active'));
-      btnEl.classList.add('active');
-      document.getElementById('iconSearchInput').value = keyword;
-      onIconSearch(keyword);
     }
 
     function insertIconTag(name) {
@@ -1355,8 +1383,8 @@
       html = html.replace(/\{icon:([^:]+)(?::(\d+))?\}/gi, function(_, iconName, size) {
         const iconSize = size ? size : 18;
         const clean = iconName.trim().toLowerCase().replace(/\.(blp|png)$/i, '');
-        const src = `https://wow.zamimg.com/images/wow/icons/large/${clean}.jpg`;
-        return `<img src="${src}" alt="${iconName}" class="trp-inline-icon" style="width:${iconSize}px; height:${iconSize}px;" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg';" />`;
+        const src = `./interface/icons/${clean}.png`;
+        return `<img src="${src}" alt="${iconName}" class="trp-inline-icon" style="width:${iconSize}px; height:${iconSize}px;" onerror="this.onerror=null;this.src='https://wow.zamimg.com/images/wow/icons/large/${clean}.jpg';" />`;
       });
 
       html = html.replace(/\{(?:h[1-3]|p|col|img|icon|link|url)[^}]*\}/gi, '');
@@ -1507,11 +1535,8 @@
 
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
-      if (id === 'bannerModal' && MASTER_BANNER_LIST.length === 0) {
+      if ((id === 'bannerModal' || id === 'iconModal') && MASTER_BANNER_LIST.length === 0) {
         fetchGitHubTextureTree();
-      }
-      if (id === 'iconModal' && MASTER_ICON_LIST.length <= STARTER_ICONS.length) {
-        fetchFullIconManifest();
       }
     }
     function closeModal(id) {
@@ -1556,7 +1581,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       renderTRP();
-      fetchFullIconManifest();
+      fetchGitHubTextureTree();
     });
   </script>
 </body>
